@@ -1,0 +1,30 @@
+# Government levies on Mobile Money transfers.
+# rate: null means "unknown for this period" - estimates then say so.
+
+e_levy:
+  name: Electronic Transfer Levy (E-Levy)
+  applies_to: [send_same_network, send_other_network]
+  periods:
+    - from: 2022-05-01
+      to: 2022-12-31
+      rate: "0.015"
+      daily_exemption: "100"
+      source: Electronic Transfer Levy Act, 2022 (Act 1075). 1.5%; first GHS100 a day exempt.
+
+    - from: 2023-01-01
+      to: 2025-04-01
+      rate: "0.01"
+      daily_exemption: "0"
+      source: >-
+        Electronic Transfer Levy (Amendment) Act, 2022 (Act 1089): 1% from 2023, no daily
+        exemption. Consistent with a 2024 MTN message: GHS40.00 tax on GHS4,000.00.
+
+    - from: 2025-04-02
+      to: null
+      rate: "0"
+      source: >-
+        Repealed by the Electronic Transfer Levy (Repeal) Act, 2025, effective 2 April 2025
+        (GRA directive: no E-Levy on transactions from midnight, 2 April 2025). Consistent
+        with 2026 Telecel messages showing "Your E-levy charge is GHS0.00".
+        Sources: gra.gov.gh (Electronic Transfer Levy repealed in April 2025);
+        EY tax alert on Ghana's 2025 tax amendments; accessed 2026-09-26.

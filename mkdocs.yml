@@ -1,0 +1,56 @@
+site_name: cedikit
+site_description: A Python toolkit for Ghanaian phone numbers, cedi amounts and Mobile Money transactions
+site_author: Francis Kusi
+repo_url: https://github.com/brainiacweb-tech/cedikit
+repo_name: cedikit
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: amber
+      accent: green
+      toggle: { icon: material/brightness-7, name: Dark mode }
+    - scheme: slate
+      primary: amber
+      accent: green
+      toggle: { icon: material/brightness-4, name: Light mode }
+  features:
+    - content.code.copy
+    - navigation.sections
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: false
+            members_order: source
+            show_root_heading: true
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - tables
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Command line: cli.md
+  - Modules:
+      - Phone numbers: modules/phone.md
+      - Money: modules/money.md
+      - SMS parser: modules/sms.md
+      - Fraud detection: modules/fraud.md
+      - Ledger: modules/ledger.md
+      - Fees: modules/fees.md
+      - Ghanaian IDs: modules/ids.md
+      - Integrations: modules/integrations.md
+      - Evaluation: modules/evaluation.md
+  - Contributing:
+      - Adding an SMS template: contributing-templates.md
+      - Privacy and data: privacy.md

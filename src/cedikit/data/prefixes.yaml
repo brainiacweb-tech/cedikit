@@ -1,0 +1,34 @@
+# Ghanaian mobile number prefixes and the network each was ORIGINALLY assigned to.
+#
+# Because of mobile number portability, a prefix only tells you the *likely*
+# network - the subscriber may have ported to another operator.
+#
+# Keys are the two national digits after the trunk "0" (e.g. 024 -> "24").
+#
+# Sources (checked 2026-09-26):
+#   NCA, "Numbering Plan for Ghana" (nca.org.gh, uploaded 2021): 9-digit national
+#     numbers; 20 & 50 Ghana Telecom (now Telecel); 23 Glo; 24, 54, 55 MTN;
+#     26, 56 Airtel and 27, 57 Millicom/Tigo (now AT); 25 mobile broadband.
+#   The plan predates later assignments: MTN received 025 blocks in 2021
+#     (Graphic Online, "MTN releases new network codes") and uses 053 and 059,
+#     which the plan still shows as unassigned.
+#   Not included: 028 (Kasapa/Expresso, which has shut down) and 029 (National
+#   Security, not public numbers).
+
+version: "2026-09-26"
+country_code: "233"
+national_number_length: 9
+
+networks:
+  MTN:
+    display_name: MTN Ghana
+    prefixes: ["24", "25", "53", "54", "55", "59"]
+  TELECEL:
+    display_name: Telecel Ghana
+    prefixes: ["20", "50"]
+  AT:
+    display_name: AT Ghana
+    prefixes: ["26", "27", "56", "57"]
+  GLO:
+    display_name: Glo Mobile Ghana
+    prefixes: ["23"]

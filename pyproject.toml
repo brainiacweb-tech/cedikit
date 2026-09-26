@@ -1,0 +1,88 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cedikit"
+version = "1.0.0"
+description = "A Python toolkit for Ghanaian phone numbers, cedi amounts, and Mobile Money transactions"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Francis Kusi" }]
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0", "typer>=0.12"]
+keywords = ["ghana", "mobile money", "momo", "cedi", "phone numbers", "fintech"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+pandas = ["pandas>=2.0"]
+excel = ["openpyxl>=3.1"]
+charts = ["matplotlib>=3.7"]
+ml = ["scikit-learn>=1.3", "joblib>=1.3"]
+pydantic = ["pydantic>=2.0"]
+django = ["django>=4.2"]
+flask = ["wtforms>=3.0"]
+all = ["cedikit[pandas,excel,charts,ml,pydantic,django,flask]"]
+docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.5", "mkdocstrings[python]>=0.25"]
+dev = [
+    "cedikit[all]",
+    "pandas-stubs",
+    "pytest>=8",
+    "pytest-cov>=5",
+    "hypothesis>=6",
+    "mypy>=1.10",
+    "ruff>=0.5",
+    "types-PyYAML",
+]
+
+[project.scripts]
+cedikit = "cedikit.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/brainiacweb-tech/cedikit"
+Issues = "https://github.com/brainiacweb-tech/cedikit/issues"
+Documentation = "https://brainiacweb-tech.github.io/cedikit/"
+Changelog = "https://github.com/brainiacweb-tech/cedikit/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cedikit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=cedikit --cov-report=term-missing"
+
+[tool.coverage.report]
+fail_under = 90
+exclude_also = ["if TYPE_CHECKING:"]
+
+[tool.mypy]
+strict = true
+# Checked as 3.12 because current numpy stubs need it; 3.10 support is enforced by
+# ruff (target-version) and by running the tests on 3.10 in CI.
+python_version = "3.12"
+files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["sklearn.*", "joblib", "wtforms.*", "django.*", "openpyxl.*", "matplotlib.*"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+ignore = ["SIM905"]

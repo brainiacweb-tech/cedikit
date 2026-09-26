@@ -1,0 +1,57 @@
+# MTN Mobile Money charges.
+#
+# Each rule records its evidence: real (anonymised) messages, and/or a published
+# tariff. MTN's own tariff page could not be reached when this was checked
+# (2026-09-26), so published figures come from a third-party tracker - confirm
+# them against MTN before relying on them. When charges change, add a new rule
+# with a `from:` date instead of editing the old one.
+#
+# Rule fields: from (date the rule applies from, or null = earliest known),
+# rate (fraction of the amount), min / max (GHS caps on the fee), flat (GHS),
+# source (the evidence).
+
+network: MTN
+
+charges:
+  cash_in:
+    - from: null
+      rate: "0"
+      source: >-
+        4 messages (2022-2026) state "Cash in (Deposit) is a free transaction on
+        MTN Mobile Money" with "Fee charged: GHS 0".
+
+  receive:
+    - from: null
+      rate: "0"
+      source: >-
+        1 message (2026) with "TRANSACTION FEE: 0.00"; published tariffs agree that
+        receiving is free.
+
+  cash_out:
+    - from: null
+      rate: "0.01"
+      min: "0.50"
+      max: "20.00"
+      source: >-
+        Published schedule (momocalc.com, re-verified July 2026): GHS0.50 flat below
+        GHS50, 1% from GHS50 to GHS1,999.99, GHS20 flat from GHS2,000. Matches a real
+        message: GHS0.50 on a GHS50.00 cash-out. (One other guide says cash-outs under
+        GHS50 are free; unconfirmed.)
+
+  send_same_network:
+    - from: null
+      rate: "0.0075"
+      max: "7.50"
+      source: >-
+        Published schedule (momocalc.com, re-verified July 2026): 0.75% up to GHS1,000,
+        GHS7.50 flat above. No real message yet to confirm it.
+
+  merchant:
+    - from: null
+      rate: "0"
+      source: >-
+        2 payments (2026, GHS51.00 and GHS1.00) with "Fee charged: GHS0.00".
+
+  # send_other_network: 1 message (2024) shows GHS10.00 on GHS4,000.00, and published
+  # guides give no clear cross-network schedule, so no rule is given (estimates say
+  # "unknown"). airtime: no evidence yet.

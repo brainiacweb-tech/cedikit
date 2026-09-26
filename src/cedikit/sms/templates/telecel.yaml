@@ -1,0 +1,92 @@
+# Telecel Cash SMS templates.
+#
+# Each template is a regular expression over the *cleaned* message (single spaces,
+# "GH₵"/"GH¢"/"GHC" rewritten to "GHS"). {{field}} placeholders expand to named
+# groups - see FIELD_PATTERNS in cedikit/sms/parser.py for the list.
+#
+#   pattern:  must match from the start of the message; trailing text is ignored.
+#   extras:   optional fields found anywhere in the message (searched separately).
+#   optional: fields that may legitimately be absent; they don't lower confidence.
+#   fields:   per-template overrides of a placeholder's regex.
+#
+# See docs/contributing-templates.md before adding a template.
+
+network: TELECEL
+senders: ["T-CASH"]
+
+templates:
+  - name: telecel_sent
+    type: SENT
+    source: sample 2026-09 (Telecel -> MTN wallet)
+    pattern: >-
+      {{transaction_id}} Confirmed\. {{amount}} sent to {{counterparty_phone}} - {{counterparty_name}}
+      (?:on {{counterparty_network}} )?on {{date}} at {{time}}\.
+      Your Telecel Cash balance is {{balance}}\.
+      You were charged {{fee}}\.(?: Your E-levy charge is {{tax}}\.)?
+    extras:
+      reference: 'Reference: {{reference}} ?\.'
+    optional: [counterparty_network, tax, reference]
+    fields:
+      transaction_id: '\d{16}'
+
+  - name: telecel_received_from_other_network
+    type: RECEIVED
+    source: samples 2026-09 (MTN wallet -> Telecel, two messages)
+    # "Transfer From:" is fixed wording; the sender's own reference, when given,
+    # comes later on a separate "Ref: ..." line.
+    pattern: >-
+      {{transaction_id}} Confirmed\. You have received {{amount}} from {{counterparty_network}}
+      with transaction reference: Transfer From: {{counterparty_phone}}-{{counterparty_name}}
+      on {{date}} at {{time}}\.
+      Your Telecel Cash balance is {{balance}}\.
+    extras:
+      reference: '\bRef: {{reference}} ?\.'
+    optional: [reference]
+    fields:
+      transaction_id: '\d{16}'
+
+  - name: telecel_received
+    type: RECEIVED
+    source: sample 2026-07 (Telecel -> Telecel)
+    pattern: >-
+      {{transaction_id}} Confirmed\. You have received {{amount}} from {{counterparty_phone}} - {{counterparty_name}}
+      on {{date}} at {{time}}\.
+      Your Telecel Cash balance is {{balance}}\.
+    extras:
+      reference: '\bReference: {{reference}} ?\.'
+    optional: [reference]
+    fields:
+      transaction_id: '\d{16}'
+
+  - name: telecel_cash_in
+    type: CASH_IN
+    source: sample 2026-09 (deposit at an agent)
+    pattern: >-
+      {{transaction_id}} Confirmed\. On {{date}} at {{time}},
+      a deposit of {{amount}} was made to your account from {{counterparty_name}} ?\.
+      Your balance is {{balance}}\.
+    fields:
+      transaction_id: '\d{16}'
+
+  - name: telecel_airtime_purchase
+    type: AIRTIME
+    source: sample 2026-09
+    pattern: >-
+      {{transaction_id}} Confirmed\. You bought {{amount}} of airtime for {{counterparty_phone}}
+      on {{date}} at {{time}}\.
+      Your Telecel Cash balance is {{balance}}\.
+    fields:
+      transaction_id: '\d{16}'
+
+  # Sent straight after telecel_airtime_purchase, with the same transaction ID.
+  # It only confirms the airtime arrived; no wallet money moves.
+  - name: telecel_airtime_received
+    type: AIRTIME
+    affects_wallet: false
+    source: sample 2026-09
+    pattern: >-
+      Transaction ID: {{transaction_id}} confirmed from \d+\.
+      You have received airtime of {{amount}} from {{counterparty_phone}} - {{counterparty_name}}
+      on {{date}} at {{time}}\.
+    fields:
+      transaction_id: '\d{16}'

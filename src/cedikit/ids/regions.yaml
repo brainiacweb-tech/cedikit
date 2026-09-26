@@ -1,0 +1,256 @@
+# GhanaPostGPS region and district codes.
+#
+# A digital address such as AK-039-5028 starts with a two-character district
+# code: the region letter (A) and a district character (K) - a letter or a digit.
+#
+# GhanaPostGPS predates the six regions created in 2019, so those share their
+# parent region's letter (e.g. Oti addresses start with V, like Volta).
+#
+# Sources (accessed 2026-09-26):
+#   https://www.ghanapostgps.com/ - address structure, Greater Accra sample codes
+#   https://en.wikipedia.org/wiki/Postal_codes_in_Ghana - full district table
+# District names follow the district map at the time the codes were assigned;
+# some districts have since been split or renamed. Re-check against the official
+# "Regions and District Codes" page before relying on district names.
+
+regions:
+  A: Ashanti
+  B: Bono, Bono East and Ahafo
+  C: Central
+  E: Eastern
+  G: Greater Accra
+  N: Northern, Savannah and North East
+  U: Upper East
+  V: Volta and Oti
+  W: Western and Western North
+  X: Upper West
+
+districts:
+  # Ashanti
+  AA: Asante Akim South
+  AB: Bekwai Municipal
+  AC: Asante Akim Central Municipal
+  AD: Kwabre East
+  AE: Ejisu Juaben Municipal
+  AF: Afigya Kwabre
+  AG: Atwima Kwanwoma
+  AH: Atwima Nwabiagya
+  AI: Atwima Mponua
+  AJ: Ejura Sekyedumase Municipal
+  AK: Kumasi Metropolitan
+  AM: Mampong Municipal
+  AN: Asante Akim North
+  AO: Obuasi Municipal
+  AP: Sekyere Afram Plains
+  AQ: Sekyere Central
+  AR: Sekyere East
+  AS: Asokore Mampong Municipal
+  AT: Bosomtwe
+  AU: Kumawu
+  AV: Amansie Central
+  AW: Amansie West
+  AX: Ahafo Ano North
+  AY: Ahafo Ano South
+  AZ: Sekyere South
+  A2: Adansi North
+  A3: Adansi South
+  A4: Bosome Freho
+  A6: Offinso North
+  A7: Offinso South Municipal
+  A9: Bosome Freho
+  # Bono, Bono East and Ahafo
+  BA: Atebubu-Amantin
+  BB: Berekum Municipal
+  BC: Banda
+  BD: Dormaa Municipal
+  BE: Dormaa East
+  BF: Dormaa West
+  BG: Sene East
+  BH: Sene West
+  BI: Jaman South
+  BJ: Jaman North
+  BK: Kintampo North Municipal
+  BL: Kintampo South
+  BN: Nkoranza North
+  BO: Nkoranza South Municipal
+  BP: Pru
+  BQ: Asutifi North
+  BR: Asutifi South
+  BS: Sunyani Municipal
+  BT: Techiman Municipal
+  BU: Asunafo North Municipal
+  BV: Asunafo South
+  BW: Wenchi Municipal
+  BX: Techiman North
+  BY: Sunyani West
+  BZ: Tain
+  B2: Tano North Municipal
+  B3: Tano South Municipal
+  # Central
+  CA: Abura Asebu Kwamankese
+  CB: Asikuma Odoben Brakwa
+  CC: Cape Coast Metropolitan
+  CE: Effutu Municipal
+  CF: Ekumfi
+  CG: Gomoa East
+  CH: Twifo Heman Lower Denkyira
+  CI: Gomoa West
+  CJ: Ajumako Enyan Esiam
+  CK: Komenda Edina Eguafo Abirem Municipal
+  CM: Mfantseman Municipal
+  CO: Agona West Municipal
+  CP: Agona East
+  CR: Assin North Municipal
+  CS: Assin South
+  CT: Twifo-Ati Morkwa
+  CU: Upper Denkyira East Municipal
+  CV: Upper Denkyira West
+  CW: Awutu Senya
+  CX: Awutu Senya East Municipal
+  # Eastern
+  EA: Asuogyaman
+  EB: Birim Central Municipal
+  ED: Denkyembour
+  EE: East Akim Municipal
+  EF: Fanteakwa
+  EG: Nsawam Adoagyiri Municipal
+  EH: Kwahu East
+  EI: Kwahu South
+  EJ: Kwahu West Municipal
+  EK: Kwaebibirem
+  EL: Lower Manya Krobo Municipal
+  EM: Akyemansa
+  EN: New Juaben Municipal
+  EO: Ayensuano
+  EP: Kwahu Afram Plains North
+  EQ: Kwahu Afram Plains South
+  ES: Suhum Municipal
+  ET: Atiwa
+  EU: Upper Manya Krobo
+  EV: Upper West Akim
+  EW: West Akim Municipal
+  EX: Birim North
+  EY: Yilo Krobo Municipal
+  EZ: Birim South
+  E2: Akuapem North Municipal
+  E3: Akuapem South
+  # Greater Accra
+  GA: Accra Metropolitan
+  GB: Ashaiman Municipal
+  GC: Ga Central Municipal
+  GD: Adentan Municipal
+  GE: Ga East Municipal
+  GK: Kpone Katamanso
+  GL: La Dade Kotopon Municipal
+  GM: La Nkwantanang Madina Municipal
+  GN: Ningo Prampram
+  GO: Shai Osudoku
+  GS: Ga South Municipal
+  GT: Tema Metropolitan
+  GW: Ga West Municipal
+  GX: Ada West
+  GY: Ada East  # from ghanapostgps.com (not in the Wikipedia table)
+  GZ: Ledzokuku-Krowor Municipal
+  # Northern, Savannah and North East
+  NA: Kpandai
+  NB: Bole
+  NC: Chereponi
+  ND: West Mamprusi
+  NE: East Mamprusi
+  NF: Tatale Sanguli
+  NG: Gushegu
+  NI: Mion
+  NK: Kumbungu
+  NL: Tolon
+  NM: Mamprugu Moagduri
+  NN: Nanumba North
+  "NO": Nanumba South  # quoted: bare NO is a YAML boolean
+  NP: Bunkpurugu-Yunyoo
+  NR: Karaga
+  NS: Sagnarigu
+  NT: Tamale Metropolitan
+  NU: Savelugu Nanton Municipal
+  NW: Sawla Tuna Kalba
+  NX: Saboba
+  NY: Yendi Municipal
+  NZ: Zabzugu
+  N2: North Gonja
+  N3: Central Gonja
+  N4: East Gonja
+  N5: West Gonja
+  # Upper East
+  UA: Bawku Municipal
+  UB: Bolgatanga Municipal
+  UE: Bolgatanga East
+  UG: Garu Tempane
+  UK: Kassena Nankana Municipal
+  UL: Kassena Nankana West
+  UN: Nabdam
+  UO: Bongo
+  UP: Pusiga
+  UR: Builsa North
+  US: Builsa South
+  UT: Talensi
+  UU: Binduri
+  UW: Bawku West
+  # Upper West
+  XD: Daffiama Bussie Issa
+  XJ: Jirapa
+  XK: Lambussie Karni
+  XL: Lawra
+  XN: Nandom
+  XO: Nadowli Kaleo
+  XS: Sissala East
+  XT: Sissala West
+  XW: Wa Municipal
+  XX: Wa East
+  XY: Wa West
+  # Volta and Oti
+  VA: Adaklu
+  VB: Biakoye
+  VC: Hohoe Municipal
+  VD: North Dayi
+  VE: South Dayi
+  VF: Afadzato South
+  VG: Agotime-Ziope
+  VH: Ho Municipal
+  VI: Ho West
+  VJ: Jasikan
+  VK: Keta Municipal
+  VM: Kadjebi
+  VN: Nkwanta North
+  VO: Nkwanta South Municipal
+  VP: Kpando Municipal
+  VQ: Krachi Nchumuru
+  VR: Krachi East Municipal
+  VS: Krachi West
+  VT: North Tongu
+  VU: South Tongu
+  VV: Central Tongu
+  VW: Akatsi North
+  VX: Akatsi South
+  VY: Ketu North Municipal
+  VZ: Ketu South Municipal
+  # Western and Western North
+  WA: Aowin
+  WB: Bibiani Anhwiaso Bekwai
+  WC: Bia East
+  WD: Bia West
+  WE: Ellembelle
+  WF: Sefwi Akontombra
+  WG: Sefwi Wiawso Municipal
+  WH: Ahanta West
+  WJ: Jomoro
+  WM: Mpohor
+  WN: Nzema East Municipal
+  WO: Bodi
+  WP: Prestea Huni Valley
+  WQ: Juaboso
+  WR: Shama
+  WS: Sekondi-Takoradi Metropolitan
+  WT: Tarkwa Nsuaem Municipal
+  WU: Suaman
+  WW: Amenfi Central
+  WX: Amenfi East
+  WY: Amenfi West
+  WZ: Wassa East

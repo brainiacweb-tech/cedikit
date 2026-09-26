@@ -1,0 +1,89 @@
+# Language and quirks seen in fake Mobile Money alerts.
+#
+# Patterns are case-insensitive regular expressions matched against the cleaned
+# message (single spaces, currency symbols normalised to "GHS").
+# strength: 0-1, how strongly one match on its own suggests a scam.
+#
+# Be careful not to catch genuine wording: real Telecel alerts say
+# "Never share your PIN or OTP with anyone", so "PIN" alone is NOT a red flag.
+
+version: "2026-09-26"
+
+phrase_categories:
+  pin_pressure:
+    strength: 0.6
+    reason: >-
+      Tells you what to do with your PIN. Genuine alerts only ever say never to share it.
+    patterns:
+      - '\b(?:enter|type|try|send|give|confirm|reset|use|input)\b[^.]{0,20}\b(?:pin|otp)\b'
+      - '\b(?:pin|otp)\b[^.]{0,20}\b(?:blocked|locked|expired)\b'
+
+  account_threat:
+    strength: 0.6
+    reason: >-
+      Claims your account is blocked or suspended. Scammers send this so you won't
+      check your real balance and discover the payment is fake.
+    patterns:
+      - '\b(?:been|being|be|is|was|are|have)\s+(?:temporarily\s+)?(?:blocked|suspended|deactivated|frozen|locked)\b'
+      - '\bagent (?:reports?|complain(?:ts?|s)?)\b'
+
+  reversal_request:
+    strength: 0.6
+    reason: >-
+      Asks you to send money back. "Wrong transfer, please return it" is the most
+      common follow-up to a fake payment alert.
+    patterns:
+      - '\b(?:send|transfer|return|refund|reverse)\b[^.]{0,20}\b(?:it|money|cash|amount)\b[^.]{0,10}\bback\b'
+      - '\b(?:sent|transferred|deposited)\b[^.]{0,30}\b(?:by|in) (?:mistake|error)\b'
+      - '\bwrong(?:ly)?\s+(?:number|transfer|transaction|deposit|sent)\b'
+      - '\bplease\s+(?:reverse|refund|return)\b'
+
+  prize_promo:
+    strength: 0.5
+    reason: Claims you have won a prize or promotion.
+    patterns:
+      - '\byou\s+(?:have\s+)?won\b'
+      - '\b(?:lucky|promo)\s+(?:winner|draw)\b'
+      - '\bclaim\s+your\s+(?:prize|reward|gift|bonus)\b'
+
+  unofficial_wording:
+    strength: 0.4
+    reason: >-
+      Uses informal or ungrammatical wording ("Sorry dear", pidgin, "Cash receive for")
+      that official, machine-generated alerts never use.
+    patterns:
+      - '\b(?:we|i) dey\b'
+      - '\b(?:abeg|chale)\b'
+      - '\bsorry dear\b'
+      - '\bcash receive\b'
+      - '\bhave been made on your (?:number|account)\b'
+
+  contact_request:
+    strength: 0.3
+    reason: >-
+      Asks you to call or message a number. Official alerts don't ask you to contact
+      an individual.
+    patterns:
+      - '\b(?:call|whatsapp|text|contact)\s+(?:me|us|this number|the number)\b'
+
+misspellings:
+  strength: 0.5
+  # Word patterns that never appear in genuine machine-generated alerts.
+  words:
+    - 'avaliable'
+    - 'availabe'
+    - 'balan'
+    - 'ballance'
+    - 'recieved'
+    - 'recived'
+    - 'trasaction'
+    - 'transcation'
+    - 'sucessful'
+    - 'succesful'
+    - 'ammount'
+    - 'depositted'
+
+# Digit counts of genuine transaction IDs, per network (from real samples).
+transaction_id_lengths:
+  MTN: 11
+  TELECEL: 16

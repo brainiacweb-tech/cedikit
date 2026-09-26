@@ -1,0 +1,63 @@
+# Fake / scam Mobile Money messages, ANONYMISED.
+#
+# Wording, typos, spacing and line breaks copy real scam messages exactly;
+# names, numbers, IDs and amounts are fake.
+#
+# expected_risk / failed_checks: when the real sender is supplied.
+# risk_without_sender: when only the text is checked.
+
+# A fake MTN-style cash-in from a personal number, then (one minute later) a
+# fake "account blocked" notice so the victim won't check their real balance.
+- id: fake_cash_in_personal_number
+  source: screenshot 2022-11, circulated as a scam example
+  sender: "+233591234567"
+  text: |-
+    Cash In  for
+    GHS150.00 from
+    AKOSUA MANSA OVER THE COUNTER MEDICINE SELLE. Balance 640.35
+    Avaliable balan 640.35
+    Transaction
+    ID: 00581234567:
+    depos(.....)
+  expected_risk: HIGH
+  risk_without_sender: HIGH
+  failed_checks: [sender, format, spelling]
+
+- id: fake_blocked_follow_up
+  source: same scam, next message
+  sender: "+233591234567"
+  text: |-
+    SORRY YOU HAVE BEING BLOCKED BY TOO MANY AGENT REPORT, DO NOT TRY YOUR PIN THANK YOU...
+  expected_risk: HIGH
+  risk_without_sender: HIGH
+  failed_checks: [sender, scam_phrases]
+
+# A second scam, three messages from one personal number: a fake "cash receive",
+# a fake "reversal" leaving the balance at zero, then an "account suspended" notice
+# spelt with accented letters to get past spam filters.
+- id: fake_cash_receive_pidgin
+  source: screenshot, circulated as a scam example
+  sender: "+233241112233"
+  text: |-
+    Cash receive for 300.00 form KOFI JOHN ANANE PAPA YAW ELECTRICALS AND DRINKHING BAR 48213905567120984431 HHT.www.download my mtn app we dey for you.
+  expected_risk: HIGH
+  risk_without_sender: MEDIUM
+  failed_checks: [sender, format, scam_phrases]
+
+- id: fake_reversal_notice
+  source: same scam, next message
+  sender: "+233241112233"
+  text: |-
+    Reversal of 300.00 have been made on your number your balance is GHS0.00
+  expected_risk: HIGH
+  risk_without_sender: MEDIUM
+  failed_checks: [sender, format, scam_phrases]
+
+- id: fake_suspended_accented
+  source: same scam, third message
+  sender: "+233241112233"
+  text: |-
+    Sorry dear Your account is Suspéndéd for 92Days due to an agent complain. Thank you
+  expected_risk: HIGH
+  risk_without_sender: HIGH
+  failed_checks: [sender, scam_phrases, disguised_letters]

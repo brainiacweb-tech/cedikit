@@ -1,0 +1,44 @@
+# Telecel Cash charges, as OBSERVED in real (anonymised) messages.
+# See the notes at the top of mtn.yaml.
+#
+# Checked 2026-09-26: Telecel's own Telecel Cash page shows no tariffs. A
+# third-party table (jbklutse.com, May 2026) contradicts real messages - it gives
+# GHS1.00 for a GHS40 transfer to MTN (a real Sept 2026 message: GHS0.20) and
+# GHS0.50 for a GHS100 Telecel transfer (a real June 2026 message: GHS0.00) - so
+# it is NOT used. Real messages win over unverified guides.
+
+network: TELECEL
+
+charges:
+  send_same_network:
+    - from: null
+      rate: "0"
+      source: >-
+        1 transfer (2026, GHS100.00) charged GHS0.00; the message says "Sending money
+        from Telecel Cash to Telecel Cash remains FREE on the Telecel Play App". It may
+        only be free through the app.
+
+  send_other_network:
+    - from: null
+      rate: "0.005"
+      source: >-
+        2 transfers to MTN (2026) charged 0.5%, e.g. GHS0.20 on GHS40.00.
+
+  receive:
+    - from: null
+      rate: "0"
+      source: >-
+        Balances in 2026 messages add up with no deduction (e.g. 114.79 + 61.00 =
+        175.79), for receipts from Telecel and from MTN.
+
+  cash_in:
+    - from: null
+      rate: "0"
+      source: A 2026 deposit shows no fee and the balance adds up exactly.
+
+  airtime:
+    - from: null
+      rate: "0"
+      source: A 2026 airtime purchase reduced the balance by exactly its amount.
+
+  # cash_out: no real message yet, and the only published table is unreliable (above).

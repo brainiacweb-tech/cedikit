@@ -1,0 +1,82 @@
+# MTN Mobile Money SMS templates. Format notes: see telecel.yaml.
+#
+# MTN messages seen so far carry no date or time - pass received_at= to
+# sms.parse() to fill in the timestamp from the phone's SMS metadata.
+
+network: MTN
+senders: ["MobileMoney"]
+
+templates:
+  - name: mtn_cash_out
+    type: CASH_OUT
+    source: sample 2026-09
+    pattern: >-
+      Cash Out made for {{amount}} to {{counterparty_name}} ?\.
+      Current Balance:? {{balance}}
+      Financial Transaction Id: {{transaction_id}}\.
+      .*?Fee charged: {{fee}}
+    fields:
+      transaction_id: '\d{11}'
+
+  - name: mtn_cash_in
+    type: CASH_IN
+    source: samples 2026-09 (two messages)
+    pattern: >-
+      Cash In received for {{amount}} from {{counterparty_name}} ?\.
+      Current Balance:? {{balance}}
+      Available Balance:? {{available_balance}} ?\.
+      Transaction ID: {{transaction_id}}\.
+      Fee charged: {{fee}}
+    fields:
+      transaction_id: '\d{11}'
+
+  # MTN wallet -> another network's wallet ("VODAFONE PUSH" = to Telecel).
+  # MTN may use the same "Your payment of ... to ..." wording for merchants, so the
+  # destination is restricted to "... PUSH" until a merchant sample confirms otherwise.
+  - name: mtn_sent_to_other_network
+    type: SENT
+    source: sample 2024-05 (MTN -> Vodafone/Telecel)
+    pattern: >-
+      Your payment of {{amount}} to {{counterparty_network}} has been completed at {{date}} {{time}}\.
+      Your new balance: {{balance}}\.
+      Fee was {{fee}} Tax was {{tax}}\.
+      Reference: {{counterparty_name}}, {{counterparty_phone}},\d+\.
+      Financial Transaction Id: {{transaction_id}}\.
+    fields:
+      transaction_id: '\d{11}'
+      counterparty_network: '[A-Z][A-Za-z]*(?: [A-Z][A-Za-z]*)* PUSH'
+
+  # Says nothing about how the bundle was paid for (airtime or MoMo) and shows no
+  # wallet balance; a MoMo-paid bundle gets its own debit SMS. So: no wallet effect.
+  - name: mtn_data_bundle
+    type: AIRTIME
+    affects_wallet: false
+    source: sample 2023-01
+    pattern: >-
+      Y['’]ello! [Yy]ou have successfully purchased {{amount}} Data Bundle
+      and received {{bundle}}\.
+
+  # Person-to-person receipt: the alert scammers imitate most.
+  - name: mtn_received
+    type: RECEIVED
+    source: sample 2026-09
+    pattern: >-
+      Payment received for {{amount}} from {{counterparty_name}}
+      Current Balance: {{balance}} ?\.
+      Available Balance: {{available_balance}}\.(?: Reference: {{reference}}\.)?
+      Transaction ID: {{transaction_id}}\.
+      TRANSACTION FEE: {{fee}}
+    optional: [reference]
+    fields:
+      transaction_id: '\d{11}'
+
+  # Paying an organisation: merchants, loan repayments ("... Loan"), auto-debits.
+  - name: mtn_payment
+    type: MERCHANT
+    source: samples 2026-09 (loan repayment, "Debit.Inv" debit)
+    pattern: >-
+      Payment for {{amount}} to {{counterparty_name}} ?\.Current Balance: {{balance}}\.
+      Transaction Id: {{transaction_id}}\.
+      Fee charged: {{fee}},Tax Charged {{tax}}
+    fields:
+      transaction_id: '\d{11}'

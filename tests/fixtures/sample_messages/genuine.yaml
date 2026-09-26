@@ -1,0 +1,304 @@
+# Genuine transaction SMS, ANONYMISED.
+#
+# Wording, spacing, punctuation and line breaks copy real messages exactly;
+# every name, phone number, transaction ID, amount, balance and date is fake.
+# Never add a message here without anonymising it first.
+
+- id: telecel_sent_cross_network
+  sender: T-CASH
+  text: |-
+    0000019472630581 Confirmed. GHS25.00 sent to 0241234567 - KWAME ASANTE MENSAH on MTN MOBILE MONEY on 2026-01-15 at 14:22:08. Your Telecel Cash balance is GHS180.45. You were charged GHS0.13. Your E-levy charge is GHS0.00. Do more with Telecel Cash! Reference: Lunch . Sendi k3k3!
+  expected:
+    template: telecel_sent
+    network: TELECEL
+    type: SENT
+    amount: "25.00"
+    fee: "0.13"
+    tax: "0.00"
+    balance: "180.45"
+    transaction_id: "0000019472630581"
+    reference: Lunch
+    counterparty_name: KWAME ASANTE MENSAH
+    counterparty_phone: "+233241234567"
+    counterparty_network: MTN
+    timestamp: "2026-01-15T14:22:08+00:00"
+
+- id: telecel_received_cross_network
+  sender: T-CASH
+  text: |-
+    0000019472100347 Confirmed. You have received GHS150.00 from MTN MOBILE MONEY with transaction reference: Transfer From: 233541234567-AMA SERWAA OWUSU  on 2026-01-14 at 09:05:44. Your Telecel Cash balance is GHS205.58.
+    .
+    Stay alert. Never share your PIN or OTP with anyone or click unknown links. Protect your personal information.
+  expected:
+    template: telecel_received_from_other_network
+    network: TELECEL
+    type: RECEIVED
+    amount: "150.00"
+    balance: "205.58"
+    transaction_id: "0000019472100347"
+    reference: null  # "Transfer From:" is fixed wording, not a reference
+    counterparty_name: AMA SERWAA OWUSU
+    counterparty_phone: "+233541234567"
+    counterparty_network: MTN
+    timestamp: "2026-01-14T09:05:44+00:00"
+
+- id: mtn_cash_out
+  sender: MobileMoney
+  text: |-
+    Cash Out made for GHS40.00 to ADOM ELECTRICALS . Current Balance: GHS22.10 Financial Transaction Id: 10493827561. Cash-out fee is charged automatically from your MTN MoMo wallet. Please do not pay any fees to the Agent. Thank you for using MTN MobileMoney. Fee charged: GHS0.40.
+  expected:
+    template: mtn_cash_out
+    network: MTN
+    type: CASH_OUT
+    amount: "40.00"
+    fee: "0.40"
+    balance: "22.10"
+    transaction_id: "10493827561"
+    counterparty_name: ADOM ELECTRICALS
+
+- id: mtn_cash_in_same_wallet
+  sender: MobileMoney
+  text: |-
+    Cash In received for GHS 300.00 from ADOM ELECTRICALS . Current Balance GHS 322.10  Available Balance GHS 322.10. Transaction ID: 10502294418. Fee charged: GHS 0. Cash in (Deposit) is a free transaction on MTN Mobile Money. Please do not pay any fees for it.
+  expected:
+    template: mtn_cash_in
+    network: MTN
+    type: CASH_IN
+    amount: "300.00"
+    fee: "0.00"
+    balance: "322.10"
+    available_balance: "322.10"
+    transaction_id: "10502294418"
+    counterparty_name: ADOM ELECTRICALS
+
+- id: mtn_cash_in_no_space_before_period
+  sender: MobileMoney
+  text: |-
+    Cash In received for GHS 75.50 from GRACE BEAUTY SALON. Current Balance GHS 75.92  Available Balance GHS 75.92. Transaction ID: 10388162047. Fee charged: GHS 0. Cash in (Deposit) is a free transaction on MTN Mobile Money. Please do not pay any fees for it.
+  expected:
+    template: mtn_cash_in
+    network: MTN
+    type: CASH_IN
+    amount: "75.50"
+    fee: "0.00"
+    balance: "75.92"
+    available_balance: "75.92"
+    transaction_id: "10388162047"
+    counterparty_name: GRACE BEAUTY SALON
+
+# The next three messages come from one Telecel wallet on the same afternoon:
+# a deposit (balance 80.37), then GHS30.00 of airtime (balance 50.37 = 80.37 - 30.00,
+# no fee), then the airtime-received notice for that same purchase.
+- id: telecel_cash_in
+  sender: T-CASH
+  text: |-
+    0000019459870042 Confirmed. On 2026-02-08 at 15:10:31, a deposit of GHS80.00 was made to your account from ABENA FOSUA PROVISIONS VENTURES      . Your balance is GHS80.37. Stay alert. Never share your PIN or OTP with anyone or click unknown links. Protect your personal information.
+  expected:
+    template: telecel_cash_in
+    network: TELECEL
+    type: CASH_IN
+    amount: "80.00"
+    balance: "80.37"
+    transaction_id: "0000019459870042"
+    counterparty_name: ABENA FOSUA PROVISIONS VENTURES
+    timestamp: "2026-02-08T15:10:31+00:00"
+    affects_wallet: true
+
+- id: telecel_airtime_purchase
+  sender: T-CASH
+  text: |-
+    0000019460055123 Confirmed. You bought GHS30.00 of airtime for 233201234567 on 2026-02-08 at 15:52:07. Your Telecel Cash balance is GHS50.37.
+  expected:
+    template: telecel_airtime_purchase
+    network: TELECEL
+    type: AIRTIME
+    amount: "30.00"
+    balance: "50.37"
+    transaction_id: "0000019460055123"
+    counterparty_phone: "+233201234567"
+    timestamp: "2026-02-08T15:52:07+00:00"
+    affects_wallet: true
+
+- id: telecel_airtime_received_notice
+  sender: T-CASH
+  text: |-
+    Transaction ID: 0000019460055123 confirmed from 555. You have received airtime of GHS30.00 from 233201234567 - KOFI BOAKYE DANSO on 2026-02-08 at 15:52:07.
+  expected:
+    template: telecel_airtime_received
+    network: TELECEL
+    type: AIRTIME
+    amount: "30.00"
+    transaction_id: "0000019460055123"
+    counterparty_phone: "+233201234567"
+    counterparty_name: KOFI BOAKYE DANSO
+    timestamp: "2026-02-08T15:52:07+00:00"
+    affects_wallet: false
+
+- id: mtn_sent_to_telecel
+  sender: MobileMoney
+  text: |-
+    Your payment of GHS 1500.00 to VODAFONE PUSH has been completed at 2024-03-12 08:15:42. Your new balance: GHS 820.45. Fee was GHS 10.00 Tax was GHS 15.00. Reference: YAW DARKO, 233507654321,1. Financial Transaction Id: 40123456789. External Transaction Id: 40123456789.Download the MoMo App for a Faster & Easier Experience Click here: http://mtnghana.app.link/xxxxxxxxxxx
+  expected:
+    template: mtn_sent_to_other_network
+    network: MTN
+    type: SENT
+    amount: "1500.00"
+    fee: "10.00"
+    tax: "15.00"
+    balance: "820.45"
+    transaction_id: "40123456789"
+    counterparty_name: YAW DARKO
+    counterparty_phone: "+233507654321"
+    counterparty_network: TELECEL
+    timestamp: "2024-03-12T08:15:42+00:00"
+
+# Sender ID of MTN bundle messages not yet confirmed.
+- id: mtn_data_bundle
+  sender: null
+  text: |-
+    Y'ello! you have successfully purchased GHC50.0 Data Bundle and received 26.83GB. This bundle does not expire. 50% 4G Bonus valid for 7 days. Subscribe to auto-renewal to bundle again when it runs out. Buy your bundle on myMTN App, click https://bit.ly/mymtn138 to download and get 50MB free now.
+  expected:
+    template: mtn_data_bundle
+    network: MTN
+    type: AIRTIME
+    amount: "50.00"
+    bundle: 26.83GB
+    affects_wallet: false
+
+- id: mtn_cash_in_dotted_agent_name
+  sender: MobileMoney
+  text: |-
+    Cash In received for GHS 640.00 from K.OWUSU ENTERPRISE. Current Balance GHS 655.20 Available Balance GHS 655.20. Transaction ID: 70345678912. Fee charged: GHS 0. Cash in (Deposit) is a free transaction on MTN Mobile Money. Please do not pay any fees for it.
+  expected:
+    template: mtn_cash_in
+    network: MTN
+    type: CASH_IN
+    amount: "640.00"
+    fee: "0.00"
+    balance: "655.20"
+    available_balance: "655.20"
+    transaction_id: "70345678912"
+    counterparty_name: K.OWUSU ENTERPRISE
+
+- id: telecel_received_cross_network_with_ref
+  sender: T-CASH
+  text: |-
+    0000019288776544 Confirmed. You have received GHS15.00 from MTN MOBILE MONEY with transaction reference: Transfer From: 233245678901-ADWOA KONADU MENSAH  on 2026-01-12 at 07:57:24. Your Telecel Cash balance is GHS15.00.
+    Ref: 1.
+    Stay alert. Never share your PIN or OTP with anyone or click unknown links. Protect your
+  expected:
+    template: telecel_received_from_other_network
+    type: RECEIVED
+    amount: "15.00"
+    balance: "15.00"
+    reference: "1"
+    counterparty_name: ADWOA KONADU MENSAH
+    counterparty_phone: "+233245678901"
+    counterparty_network: MTN
+
+- id: telecel_cash_in_mixed_case_name
+  sender: T-CASH
+  text: |-
+    0000019288776655 Confirmed. On 2026-01-12 at 08:08:20, a deposit of GHS40.00 was made to your account from Akua Mensah Bi Nti Enterprise . Your balance is GHS40.00.
+    Stay alert. Never share your PIN or OTP with anyone or click unknown links. Protect your personal information.
+  expected:
+    template: telecel_cash_in
+    type: CASH_IN
+    amount: "40.00"
+    balance: "40.00"
+    counterparty_name: Akua Mensah Bi Nti Enterprise
+
+- id: telecel_cash_in_digits_in_name
+  sender: T-CASH
+  text: |-
+    0000019277665544 Confirmed. On 2026-01-10 at 14:19:45, a deposit of GHS30.00 was made to your account from YAW BOATENG 0244 ENTERPRISE. Your balance is GHS30.67. Stay alert. Never share your PIN or OTP with anyone or click unknown links. Protect your personal information.
+  expected:
+    template: telecel_cash_in
+    type: CASH_IN
+    amount: "30.00"
+    balance: "30.67"
+    counterparty_name: YAW BOATENG 0244 ENTERPRISE
+
+# The next two come from one Telecel wallet two days apart:
+# send GHS70.00 (balance 90.25, free), then receive GHS45.00 (balance 135.25 = 90.25 + 45.00).
+- id: telecel_sent_same_network
+  sender: T-CASH
+  text: |-
+    0000019301122334 Confirmed. GHS70.00 sent to 0509876543 - ESI NAANA QUAYE on 2026-01-05 at 21:14:09. Your Telecel Cash balance is GHS90.25. You were charged GHS0.00. Your E-levy charge is GHS0.00. Do more with Telecel Cash! Reference: Rent.
+    Sending money from Telecel Cash to Telecel Cash remains FREE on the Telecel Play App. Download the App
+  expected:
+    template: telecel_sent
+    network: TELECEL
+    type: SENT
+    amount: "70.00"
+    fee: "0.00"
+    tax: "0.00"
+    balance: "90.25"
+    transaction_id: "0000019301122334"
+    reference: Rent
+    counterparty_name: ESI NAANA QUAYE
+    counterparty_phone: "+233509876543"
+    counterparty_network: null
+    timestamp: "2026-01-05T21:14:09+00:00"
+
+- id: telecel_received_same_network
+  sender: T-CASH
+  text: |-
+    0000019305566778 Confirmed. You have received GHS45.00 from 233209876543 - KOJO ANSAH BEKOE on 2026-01-07 at 11:02:51. Your Telecel Cash balance is GHS135.25.
+    Reference: 1.
+    Stay alert. Never share your PIN or OTP with anyone or click unknown links. Protect your personal information
+  expected:
+    template: telecel_received
+    network: TELECEL
+    type: RECEIVED
+    amount: "45.00"
+    balance: "135.25"
+    transaction_id: "0000019305566778"
+    reference: "1"
+    counterparty_name: KOJO ANSAH BEKOE
+    counterparty_phone: "+233209876543"
+    timestamp: "2026-01-07T11:02:51+00:00"
+
+# Received, then immediately swept by a loan repayment: 36.00 - 36.00 = 0.00.
+- id: mtn_received
+  sender: MobileMoney
+  text: |-
+    Payment received for GHS 36.00 from KWESI APPIAH Current Balance: GHS 36.00 . Available Balance: GHS 36.00. Reference: Rent. Transaction ID: 51234567890. TRANSACTION FEE: 0.00
+  expected:
+    template: mtn_received
+    network: MTN
+    type: RECEIVED
+    amount: "36.00"
+    fee: "0.00"
+    balance: "36.00"
+    available_balance: "36.00"
+    reference: Rent
+    transaction_id: "51234567890"
+    counterparty_name: KWESI APPIAH
+
+- id: mtn_loan_repayment
+  sender: MobileMoney
+  text: |-
+    Payment for GHS36.00 to Sika Quick Loan .Current Balance: GHS 0.00. Transaction Id: 51234571234. Fee charged: GHS0.00,Tax Charged 0.Download the MoMo App for a Faster & Easier Experience. Click here: https://mtnmymomo.onelink.me/XJOt/MoMo
+  expected:
+    template: mtn_payment
+    network: MTN
+    type: MERCHANT
+    amount: "36.00"
+    fee: "0.00"
+    tax: "0.00"
+    balance: "0.00"
+    transaction_id: "51234571234"
+    counterparty_name: Sika Quick Loan
+
+- id: mtn_payment_dotted_payee
+  sender: MobileMoney
+  text: |-
+    Payment for GHS1.00 to Debit.Inv  .Current Balance: GHS 0.52. Transaction Id: 50987654321. Fee charged: GHS0.00,Tax Charged 0.Download the MoMo App for a Faster & Easier Experience. Click here: https://mtnmymomo.onelink.me/XJOt/MoMo
+  expected:
+    template: mtn_payment
+    type: MERCHANT
+    amount: "1.00"
+    balance: "0.52"
+    tax: "0.00"
+    counterparty_name: Debit.Inv
