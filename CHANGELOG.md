@@ -7,6 +7,8 @@ are released as patch versions.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-26
+
 ### Added
 - **Desktop app** (`cedikit app` / `cedikit-app`), built with Tkinter: tabs to check a
   message for fraud, build an account book and save it to Excel/CSV, clean phone numbers,

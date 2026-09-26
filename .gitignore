@@ -15,3 +15,4 @@ htmlcov/
 site/
 .ipynb_checkpoints/
 .claude/
+dist-app/

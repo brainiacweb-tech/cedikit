@@ -1,4 +1,4 @@
-"""Build the cedikit desktop app as a single Windows program: dist/cedikit-app.exe.
+"""Build the cedikit desktop app as a single Windows program: dist-app/cedikit-app.exe.
 
 Run from the repository root, in an environment with cedikit and PyInstaller:
 
@@ -6,7 +6,8 @@ Run from the repository root, in an environment with cedikit and PyInstaller:
     python packaging/build_exe.py
 
 The .exe includes Python, Tkinter and cedikit's data files, so it runs on computers
-without Python installed. It then self-tests the built program.
+without Python installed. It goes in dist-app/ (not dist/, which holds the PyPI files),
+and the script then self-tests it.
 """
 
 from __future__ import annotations
@@ -18,7 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LAUNCHER = ROOT / "packaging" / "launch_desktop.py"
 ICON = ROOT / "src" / "cedikit" / "app" / "cedikit.ico"
-EXE = ROOT / "dist" / "cedikit-app.exe"
+EXE = ROOT / "dist-app" / "cedikit-app.exe"  # kept out of dist/, which holds the PyPI files
 
 # Big optional libraries the desktop app never uses: keep them out of the .exe.
 EXCLUDE = [
@@ -35,7 +36,7 @@ def main() -> int:
         "--icon", str(ICON),
         "--collect-data", "cedikit",      # YAML data files, icon
         "--hidden-import", "openpyxl",    # Excel export is imported lazily
-        "--distpath", str(ROOT / "dist"),
+        "--distpath", str(EXE.parent),
         "--workpath", str(ROOT / "build"),
         "--specpath", str(ROOT / "build"),
         *[arg for module in EXCLUDE for arg in ("--exclude-module", module)],

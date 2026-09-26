@@ -3,6 +3,7 @@
 <img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/logo.svg" alt="cedikit" width="460">
 
 ### A Python toolkit for Ghanaian phone numbers, cedi amounts and Mobile Money transactions
+#### 📦 Python library · 💻 Command line · 🪟 Desktop app · 🌐 Web app
 
 [![PyPI](https://img.shields.io/pypi/v/cedikit?color=006B3F&label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/cedikit/)
 [![Python](https://img.shields.io/pypi/pyversions/cedikit?color=FCD116&logo=python&logoColor=black)](https://pypi.org/project/cedikit/)
@@ -14,13 +15,30 @@
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB0)
 ![Ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)
 ![Offline](https://img.shields.io/badge/runs-100%25%20offline-111111)
+[![Download](https://img.shields.io/github/v/release/brainiacweb-tech/cedikit?label=download%20app&logo=windows&color=006B3F)](https://github.com/brainiacweb-tech/cedikit/releases/latest)
 
 **[📚 Documentation](https://cedikit.readthedocs.io/)** ·
+**[🖥️ Apps](#%EF%B8%8F-desktop-and-web-apps)** ·
+**[⬇️ Download for Windows](https://github.com/brainiacweb-tech/cedikit/releases/latest)** ·
 **[🚀 Quickstart](#-quickstart)** ·
 **[🏗️ Architecture](#%EF%B8%8F-architecture)** ·
 **[💻 CLI](#-command-line)** ·
 **[🤝 Contributing](#-contributing)**
 
+</div>
+
+---
+
+> [!TIP]
+> **Not a programmer? You don't need to write any code.** cedikit also comes as a normal
+> **Windows program**: [download `cedikit-app.exe`](https://github.com/brainiacweb-tech/cedikit/releases/latest),
+> double-click it, and use the buttons to check payment messages for scams, turn your MoMo
+> messages into an Excel account book, and clean up customers' phone numbers.
+> [See the apps ↓](#%EF%B8%8F-desktop-and-web-apps)
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_check.png" alt="The cedikit desktop app flagging a fake payment message" width="760">
+<br><sub>The cedikit desktop app flagging a fake MoMo payment message</sub>
 </div>
 
 ---
@@ -156,7 +174,7 @@ numbers or money details anywhere on the internet.
 
 ## 🖥️ Desktop and web apps
 
-*New in 1.1.0.* cedikit also comes as **software with windows and buttons**, so anyone can use
+*New in version 1.1.0.* cedikit also comes as **software with windows and buttons**, so anyone can use
 it without writing code. Both apps have the same six tabs and give exactly the same answers.
 
 | Tab | What you do |
@@ -290,6 +308,14 @@ format checks, with region and district names for **218 district codes**.
 ---
 
 ## 📦 Installation
+
+**Pick what suits you:**
+
+| I am… | Get this | How |
+|---|---|---|
+| 🏪 **Not a programmer** | 🪟 Desktop app | [Download `cedikit-app.exe`](https://github.com/brainiacweb-tech/cedikit/releases/latest) and double-click it. No Python needed. |
+| 🙋 **Comfortable with Python** | 🪟 Desktop or 🌐 web app | `pip install "cedikit[app]"` → `cedikit app`, or `pip install "cedikit[web]"` → `cedikit web` |
+| 👩‍💻 **A developer** | 📦 Library + 💻 CLI | `pip install cedikit` (below) |
 
 ```bash
 pip install cedikit             # core library + the `cedikit` command
