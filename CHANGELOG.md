@@ -5,9 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 [Semantic Versioning](https://semver.org/). Data-file updates (prefixes, templates, fee tables)
 are released as patch versions.
 
-## [1.0.0] - Unreleased
+## [1.0.0] - 2026-09-26
 
-First complete release. Everything runs offline.
+First complete release, published on PyPI (https://pypi.org/project/cedikit/). Everything
+runs offline.
 
 ### Added
 - **`cedikit.phone`**: `normalise`, `is_valid`, `format` (e164 / local / pretty /
