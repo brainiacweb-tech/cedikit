@@ -40,6 +40,8 @@ __all__ = [
     "LedgerSummary",
     "Rule",
     "expected_balance",
+    "read_messages",
+    "split_messages",
 ]
 
 Period = Literal["day", "week", "month"]
@@ -626,6 +628,31 @@ class Ledger:
         if path is not None:
             fig.savefig(path, dpi=150)
         return fig
+
+
+def split_messages(text: str) -> list[str]:
+    """Split pasted text into messages: one message per paragraph (blank line between).
+
+    Example:
+        >>> split_messages("first message\\n\\n  second\\nmessage  \\n\\n\\n")
+        ['first message', 'second\\nmessage']
+    """
+    blocks = text.replace("\r\n", "\n").split("\n\n")
+    return [b.strip() for b in blocks if b.strip()]
+
+
+def read_messages(path: str | Path) -> list[dict[str, str]]:
+    """Read messages from a file, ready for :meth:`Ledger.from_messages`.
+
+    A ``.csv`` file needs a ``text`` column, and may have ``sender`` and
+    ``received_at`` (ISO date-time) columns. Any other file is plain text with
+    one message per paragraph.
+    """
+    path = Path(path)
+    if path.suffix.lower() == ".csv":
+        with path.open(newline="", encoding="utf-8-sig") as fh:
+            return [row for row in csv.DictReader(fh) if row.get("text")]
+    return [{"text": m} for m in split_messages(path.read_text(encoding="utf-8-sig"))]
 
 
 def _unpack(item: MessageInput, default_sender: str | None) -> tuple[str, str | None, Any]:

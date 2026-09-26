@@ -22,7 +22,7 @@ from cedikit import __version__, fees, fraud, money, phone
 from cedikit.exceptions import CedikitError
 from cedikit.fees import Kind
 from cedikit.ids import ghana_card, gpgps
-from cedikit.ledger import Ledger
+from cedikit.ledger import Ledger, read_messages
 from cedikit.sms.anonymise import anonymise_many
 
 app = typer.Typer(help="Tools for Ghanaian phone numbers, cedi amounts and Mobile Money SMS.")
@@ -155,16 +155,6 @@ def money_words(amount: str) -> None:
 # -- sms ----------------------------------------------------------------------
 
 
-def _read_messages(path: Path) -> list[dict[str, str]]:
-    """Messages separated by blank lines (.txt), or a CSV with a ``text`` column and
-    optional ``sender`` and ``received_at`` (ISO date-time) columns."""
-    if path.suffix.lower() == ".csv":
-        with path.open(newline="", encoding="utf-8-sig") as fh:
-            return [row for row in csv.DictReader(fh) if row.get("text")]
-    blocks = path.read_text(encoding="utf-8-sig").replace("\r\n", "\n").split("\n\n")
-    return [{"text": b.strip()} for b in blocks if b.strip()]
-
-
 @sms_app.command("parse")
 def sms_parse(
     input: Annotated[
@@ -178,7 +168,7 @@ def sms_parse(
     output: Annotated[Optional[Path], typer.Option(help="Output file.")] = None,  # noqa: UP045
 ) -> None:
     """Turn a file of MoMo SMS into a ledger and print a summary."""
-    ledger = Ledger.from_messages(_read_messages(input), sender).categorise()
+    ledger = Ledger.from_messages(read_messages(input), sender).categorise()
     typer.echo(str(ledger.summary()))
     if ledger.notices:
         typer.echo(f"{len(ledger.notices)} notices (e.g. airtime received) were not counted.")
@@ -209,7 +199,7 @@ def sms_anonymise(
     seed: Annotated[Optional[int], typer.Option(help="Make the output repeatable.")] = None,  # noqa: UP045
 ) -> None:
     """Replace names, numbers, IDs, amounts and dates (keeps balances consistent)."""
-    messages = [(m["text"], m.get("sender") or None) for m in _read_messages(input)]
+    messages = [(m["text"], m.get("sender") or None) for m in read_messages(input)]
     for result in anonymise_many(messages, seed=seed):
         if result.needs_review:
             typer.secho("# CHECK BY HAND: " + " ".join(result.notes), fg=typer.colors.YELLOW)
@@ -274,6 +264,41 @@ def ids_check(value: str) -> None:
     else:
         raise _fail(f"{value!r} is neither a Ghana Card number nor a GhanaPostGPS address.")
     typer.echo("Format check only: this does not confirm that it exists.")
+
+
+# -- apps ---------------------------------------------------------------------
+
+
+@app.command("app")
+def open_desktop_app() -> None:
+    """Open the desktop app (windows and buttons, no typing commands)."""
+    try:
+        from cedikit.app.desktop import main as desktop_main
+    except ImportError as exc:  # e.g. Linux without the python3-tk package
+        raise _fail(f"The desktop app needs Tkinter, which isn't available: {exc}") from None
+    desktop_main([])
+
+
+@app.command("web")
+def open_web_app(
+    port: Annotated[int, typer.Option(help="Port to serve on.")] = 8501,
+) -> None:
+    """Open the web app in your browser (runs on this computer only)."""
+    import importlib.util
+    import subprocess
+
+    if importlib.util.find_spec("streamlit") is None:
+        raise _fail('The web app needs Streamlit. Install it with: pip install "cedikit[web]"')
+    script = Path(__file__).parent / "app" / "web.py"
+    typer.echo(f"Starting cedikit web app at http://localhost:{port} (Ctrl+C to stop)")
+    command = [
+        sys.executable, "-m", "streamlit", "run", str(script),
+        "--server.port", str(port),
+        "--server.address", "localhost",
+        "--browser.gatherUsageStats", "false",
+        "--client.toolbarMode", "minimal",
+    ]  # fmt: skip
+    raise typer.Exit(subprocess.call(command))
 
 
 if __name__ == "__main__":  # pragma: no cover

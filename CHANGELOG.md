@@ -7,6 +7,19 @@ are released as patch versions.
 
 ## [Unreleased]
 
+### Added
+- **Desktop app** (`cedikit app` / `cedikit-app`), built with Tkinter: tabs to check a
+  message for fraud, build an account book and save it to Excel/CSV, clean phone numbers,
+  write amounts in words, estimate fees, and check Ghana Card numbers and GhanaPostGPS
+  addresses. Sharp on high-resolution screens; "Try with samples" buttons throughout.
+- **Stand-alone Windows program** `cedikit-app.exe` (no Python needed), built by
+  `packaging/build_exe.py`, which also self-tests the result.
+- **Web app** (`cedikit web`, extra `cedikit[web]`), built with Streamlit: the same tabs in
+  the browser, served on localhost only, with Streamlit's usage statistics switched off.
+- `cedikit.app.common`: shared labels, tables and examples, so both apps always agree.
+- `python -m cedikit` works like the `cedikit` command.
+- `ledger.read_messages()` and `ledger.split_messages()` (moved from the CLI).
+
 ### Removed
 - Glo (023) numbers are no longer accepted by `cedikit.phone`; supported networks are MTN,
   Telecel and AT.

@@ -35,7 +35,9 @@ ml = ["scikit-learn>=1.3", "joblib>=1.3"]
 pydantic = ["pydantic>=2.0"]
 django = ["django>=4.2"]
 flask = ["wtforms>=3.0"]
-all = ["cedikit[pandas,excel,charts,ml,pydantic,django,flask]"]
+app = ["openpyxl>=3.1"]
+web = ["streamlit>=1.46", "openpyxl>=3.1"]
+all = ["cedikit[pandas,excel,charts,ml,pydantic,django,flask,web]"]
 docs = ["mkdocs>=1.6,<2", "mkdocs-material>=9.5", "mkdocstrings[python]>=0.25"]
 dev = [
     "cedikit[all]",
@@ -51,6 +53,9 @@ dev = [
 [project.scripts]
 cedikit = "cedikit.cli:app"
 
+[project.gui-scripts]
+cedikit-app = "cedikit.app.desktop:main"
+
 [project.urls]
 Homepage = "https://github.com/brainiacweb-tech/cedikit"
 Issues = "https://github.com/brainiacweb-tech/cedikit/issues"
@@ -64,6 +69,11 @@ packages = ["src/cedikit"]
 testpaths = ["tests"]
 addopts = "--cov=cedikit --cov-report=term-missing"
 
+[tool.coverage.run]
+# The web app is exercised by tests/test_app.py through Streamlit's AppTest, which runs
+# the script in a way coverage cannot trace, so it is left out of the percentage.
+omit = ["*/cedikit/app/web.py"]
+
 [tool.coverage.report]
 fail_under = 90
 exclude_also = ["if TYPE_CHECKING:"]
@@ -76,7 +86,7 @@ python_version = "3.12"
 files = ["src"]
 
 [[tool.mypy.overrides]]
-module = ["sklearn.*", "joblib", "wtforms.*", "django.*", "openpyxl.*", "matplotlib.*"]
+module = ["sklearn.*", "joblib", "wtforms.*", "django.*", "openpyxl.*", "matplotlib.*", "PIL.*"]
 ignore_missing_imports = true
 
 [tool.ruff]

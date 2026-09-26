@@ -14,3 +14,4 @@ coverage.xml
 htmlcov/
 site/
 .ipynb_checkpoints/
+.claude/

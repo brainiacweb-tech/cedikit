@@ -9,7 +9,7 @@
 [![Docs](https://readthedocs.org/projects/cedikit/badge/?version=latest)](https://cedikit.readthedocs.io/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-CE1126.svg)](https://github.com/brainiacweb-tech/cedikit/blob/main/LICENSE)
 <br>
-![Tests](https://img.shields.io/badge/tests-362%20passing-006B3F)
+![Tests](https://img.shields.io/badge/tests-379%20passing-006B3F)
 ![Coverage](https://img.shields.io/badge/coverage-99%25-006B3F)
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB0)
 ![Ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)
@@ -28,6 +28,7 @@
 ## 📖 Table of contents
 
 - [cedikit in plain words](#-cedikit-in-plain-words) ← start here if you're not a programmer
+- [Desktop and web apps](#%EF%B8%8F-desktop-and-web-apps) ← use cedikit without writing code
 - [Why cedikit?](#-why-cedikit)
 - [Features](#-features)
 - [Installation](#-installation)
@@ -131,10 +132,12 @@ numbers or money details anywhere on the internet.
 
 ### 👥 Who is it for?
 
+- 🏪 **Shop owners** can use the **desktop app** directly: no coding, just buttons
+  ([see below](#%EF%B8%8F-desktop-and-web-apps)).
 - 👩‍💻 **Programmers** use it like **ready-made building blocks** to build apps for Ghanaian
   businesses, so they don't have to build these helpers from scratch.
-- 🏪 **Shop owners and traders** benefit through those apps: cleaner records, automatic
-  accounts and scam warnings.
+- 🏪 **Traders** also benefit through apps other people build on cedikit: cleaner records,
+  automatic accounts and scam warnings.
 - 🎓 **Students and researchers** use it to study Mobile Money data.
 
 ### 📚 Words you might see
@@ -148,6 +151,76 @@ numbers or money details anywhere on the internet.
 | **Open source** | The code is free for anyone to see, use and improve |
 | **PyPI** | The online "app store" for Python tools; cedikit lives there |
 | **Offline** | Works without the internet |
+
+---
+
+## 🖥️ Desktop and web apps
+
+*New in 1.1.0.* cedikit also comes as **software with windows and buttons**, so anyone can use
+it without writing code. Both apps have the same six tabs and give exactly the same answers.
+
+| Tab | What you do |
+|---|---|
+| ⚠️ **Check a message** | Paste a payment SMS and who sent it → **LOW / MEDIUM / HIGH** risk, with reasons |
+| 📒 **Account book** | Paste MoMo messages or open a file → totals, a table of every payment, **Save as Excel** |
+| 📱 **Phone numbers** | Paste a list or open a customer CSV → cleaned numbers, networks, bad numbers flagged |
+| 💰 **Money & fees** | Amounts in words; estimate MoMo charges |
+| 🪪 **Ghana Card & address** | Check a Ghana Card number or GhanaPostGPS address is written correctly |
+| 📘 **About** | What cedikit does, and the safety reminder |
+
+Every tab has a **"Try with samples"** button, so you can see it working straight away.
+
+<table>
+<tr>
+<td width="50%"><img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_check.png" alt="Checking a fake payment message"><br><sub><b>Check a message:</b> a fake alert flagged HIGH risk, with the reasons</sub></td>
+<td width="50%"><img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_ledger.png" alt="Account book built from MoMo messages"><br><sub><b>Account book:</b> MoMo messages turned into totals and a table, ready for Excel</sub></td>
+</tr>
+<tr>
+<td width="50%"><img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_phones.png" alt="Cleaning phone numbers"><br><sub><b>Phone numbers:</b> every number written the same way; bad ones in red</sub></td>
+<td width="50%"><img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_money.png" alt="Money in words and fee estimates"><br><sub><b>Money & fees:</b> amounts in words, and fee estimates with their sources</sub></td>
+</tr>
+</table>
+
+### 🪟 Desktop app
+
+A normal Windows program. Pick one way to start it:
+
+| How | Steps |
+|---|---|
+| **Stand-alone program** (no Python needed) | Download `cedikit-app.exe` from the [Releases page](https://github.com/brainiacweb-tech/cedikit/releases) and double-click it |
+| **With Python** | `pip install "cedikit[app]"`, then run `cedikit app` (or `cedikit-app`) |
+
+> [!NOTE]
+> Windows may warn about a program "from an unknown publisher" the first time, because the
+> `.exe` isn't code-signed. Click **More info → Run anyway**, but only for a file you
+> downloaded from the official Releases page.
+
+### 🌐 Web app
+
+The same tabs in your web browser:
+
+```bash
+pip install "cedikit[web]"
+cedikit web                  # opens http://localhost:8501
+```
+
+It runs **only on your own computer** (`localhost`). The launcher also switches off Streamlit's
+anonymous usage statistics, so nothing is sent online.
+
+### 🧑‍💻 How the apps are built
+
+```mermaid
+flowchart LR
+    D["🪟 Desktop app<br/>Tkinter · cedikit/app/desktop.py"] --> C["🔗 Shared app logic<br/>cedikit/app/common.py<br/>labels · tables · examples"]
+    W["🌐 Web app<br/>Streamlit · cedikit/app/web.py"] --> C
+    C --> L["📦 cedikit library<br/>fraud · ledger · phone · money · fees · ids"]
+    E["📦 cedikit-app.exe<br/>PyInstaller · packaging/build_exe.py"] -.bundles.-> D
+```
+
+Both apps only handle screens and buttons. All the logic lives in the library and in
+`cedikit/app/common.py`, which is why they always agree. The `.exe` bundles Python, the desktop
+app and cedikit's data files into one 14 MB program; build it with
+`python packaging/build_exe.py`, which also self-tests the result.
 
 ---
 
@@ -207,7 +280,7 @@ Unknown charges are reported as unknown, never guessed.
 format checks, with region and district names for **218 district codes**.
 
 ### 🔌 Integrations and tools
-`cedikit` **CLI** · **pandas** `.cedikit` accessor · **Pydantic** field types ·
+🪟 **Desktop app** and 🌐 **web app** for non-programmers · `cedikit` **CLI** · **pandas** `.cedikit` accessor · **Pydantic** field types ·
 **Django** and **Flask/WTForms** validators · evaluation tools for precision and recall.
 
 </td>
@@ -233,6 +306,8 @@ Requires **Python 3.10+**. The core depends only on `PyYAML` and `Typer`.
 | `ml` | scikit-learn, joblib | `fraud.classifier.ScamClassifier` |
 | `pydantic` | pydantic | `GhanaPhone`, `CediAmount` field types |
 | `django` · `flask` | django · wtforms | Form and model validators |
+| `app` | openpyxl | The desktop app with Excel export (`cedikit app`) |
+| `web` | streamlit, openpyxl | The web app (`cedikit web`) |
 
 > [!TIP]
 > On Windows, if `cedikit` isn't recognised after installing, pip has put it in a folder that
@@ -560,11 +635,17 @@ cedikit/
 │   │   ├── ghana_card.py        # GHA / FGN card numbers
 │   │   ├── gpgps.py             # GhanaPostGPS digital addresses
 │   │   └── regions.yaml         # 10 region letters, 218 district codes
-│   └── 📂 integrations/          # pandas, pydantic, django, flask
-├── 📂 tests/                    # 362 tests, anonymised fixtures in fixtures/sample_messages/
+│   ├── 📂 integrations/          # pandas, pydantic, django, flask
+│   └── 📂 app/                   # 🖥️ apps for non-programmers
+│       ├── common.py            # shared labels, tables, examples
+│       ├── desktop.py           # 🪟 Tkinter desktop app
+│       ├── web.py               # 🌐 Streamlit web app
+│       └── cedikit.ico          # app icon
+├── 📂 tests/                    # 379 tests, anonymised fixtures in fixtures/sample_messages/
 ├── 📂 docs/                     # MkDocs site (Read the Docs)
 ├── 📂 examples/                 # synthetic demo data + generator
 ├── 📂 notebooks/                # end-to-end demo notebook
+├── 📂 packaging/                # builds the stand-alone cedikit-app.exe
 ├── .github/workflows/ci.yml     # lint, types, tests on 3.10–3.13, build, publish
 ├── .readthedocs.yaml            # docs hosting
 └── pyproject.toml               # packaging (Hatch), extras, tool config
@@ -636,11 +717,11 @@ classDiagram
 
 | Check | Result |
 |---|---|
-| 🧪 Tests (pytest + Hypothesis property tests) | **362 passing** |
+| 🧪 Tests (pytest + Hypothesis property tests) | **379 passing** |
 | 📈 Line coverage | **99%** (minimum enforced: 90%) |
 | 🔍 Type checking | **mypy strict**, zero errors |
 | 🧹 Lint and format | **Ruff**, zero issues |
-| 📚 Docstring examples | 28 doctests run as tests |
+| 📚 Docstring examples | 29 doctests run as tests |
 | 📄 Docs build | `mkdocs build --strict` |
 | 🐍 Python versions | 3.10 · 3.11 · 3.12 · 3.13 |
 
@@ -692,7 +773,7 @@ mkdocs serve                             # docs at http://127.0.0.1:8000
 - [x] 📱 Phone, 💰 money, 📩 SMS parser, 🚨 fraud checks, 📒 ledger, 🧾 fees, 🪪 IDs
 - [x] 💻 CLI, 🔌 integrations, 📚 docs, 📦 PyPI release
 - [ ] 📏 Held-out evaluation on unseen genuine and scam messages
-- [ ] ▶️ `python -m cedikit` entry point
+- [x] 🖥️ Desktop app, stand-alone `.exe`, web app, `python -m cedikit`
 - [ ] 🏦 Bank transaction SMS · 📄 MoMo PDF statements
 - [ ] 🗣️ Twi and other local-language scam phrases
 - [ ] 🤖 Telegram bot and web app built on cedikit

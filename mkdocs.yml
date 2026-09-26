@@ -45,6 +45,7 @@ markdown_extensions:
 nav:
   - Home: index.md
   - In plain words: explained.md
+  - Desktop & web apps: apps.md
   - Quickstart: quickstart.md
   - Command line: cli.md
   - Modules:
