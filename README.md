@@ -210,12 +210,11 @@ the text with your screenshot.
 
 ### 🧭 Feature tour: try these tests yourself
 
-Every test below uses made-up data and works offline. Click a feature to open it. The same
+Every test below uses made-up data and works offline. The same
 results are checked automatically by cedikit's test suite (`tests/test_app.py`) and by the
 app's built-in self-test (`cedikit-app --selftest`), so this tour stays accurate.
 
-<details open>
-<summary><b>⚠️ Spot a fake payment alert</b></summary>
+#### ⚠️ Spot a fake payment alert
 
 **Try this**
 
@@ -228,10 +227,9 @@ app's built-in self-test (`cedikit-app --selftest`), so this tour stays accurate
 
 From the command line: `cedikit fraud check "Cash In  for GHS150.00 from ... Avaliable balan 640.35" --sender +233591234567`
 
-</details>
+---
 
-<details>
-<summary><b>🚫 Spot the 'your account is blocked' trick</b></summary>
+#### 🚫 Spot the 'your account is blocked' trick
 
 **Try this**
 
@@ -243,10 +241,9 @@ From the command line: `cedikit fraud check "Cash In  for GHS150.00 from ... Ava
 
 From the command line: `cedikit fraud check "SORRY YOU HAVE BEING BLOCKED ... DO NOT TRY YOUR PIN" --sender +233591234567`
 
-</details>
+---
 
-<details>
-<summary><b>✅ See a genuine alert pass</b></summary>
+#### ✅ See a genuine alert pass
 
 **Try this**
 
@@ -258,10 +255,9 @@ From the command line: `cedikit fraud check "SORRY YOU HAVE BEING BLOCKED ... DO
 
 From the command line: `cedikit fraud check "Payment received for GHS 50.00 from KOFI MENSAH ..." --sender MobileMoney`
 
-</details>
+---
 
-<details>
-<summary><b>📷 Check a screenshot instead of typing</b></summary>
+#### 📷 Check a screenshot instead of typing
 
 **Try this**
 
@@ -273,10 +269,9 @@ From the command line: `cedikit fraud check "Payment received for GHS 50.00 from
 
 From the command line: `python -c "from cedikit import ocr; print(ocr.read_screenshot('shot.png'))"`
 
-</details>
+---
 
-<details>
-<summary><b>📒 Turn MoMo messages into an account book</b></summary>
+#### 📒 Turn MoMo messages into an account book
 
 **Try this**
 
@@ -290,10 +285,9 @@ From the command line: `python -c "from cedikit import ocr; print(ocr.read_scree
 
 From the command line: `cedikit sms parse inbox.txt --sender MobileMoney --export xlsx`
 
-</details>
+---
 
-<details>
-<summary><b>📱 Clean up customers' phone numbers</b></summary>
+#### 📱 Clean up customers' phone numbers
 
 **Try this**
 
@@ -306,10 +300,9 @@ From the command line: `cedikit sms parse inbox.txt --sender MobileMoney --expor
 
 From the command line: `cedikit phone clean customers.csv --column phone`
 
-</details>
+---
 
-<details>
-<summary><b>💰 Amounts in words and MoMo charges</b></summary>
+#### 💰 Amounts in words and MoMo charges
 
 **Try this**
 
@@ -322,10 +315,9 @@ From the command line: `cedikit phone clean customers.csv --column phone`
 
 From the command line: `cedikit money words 1250.50  ·  cedikit fees estimate MTN cash_out 500`
 
-</details>
+---
 
-<details>
-<summary><b>🪪 Check a Ghana Card number</b></summary>
+#### 🪪 Check a Ghana Card number
 
 **Try this**
 
@@ -337,10 +329,9 @@ From the command line: `cedikit money words 1250.50  ·  cedikit fees estimate M
 
 From the command line: `cedikit ids check "gha 123456789 0"`
 
-</details>
+---
 
-<details>
-<summary><b>🌍 Check a foreign national's Ghana Card</b></summary>
+#### 🌍 Check a foreign national's Ghana Card
 
 **Try this**
 
@@ -352,10 +343,9 @@ From the command line: `cedikit ids check "gha 123456789 0"`
 
 From the command line: `cedikit ids check FGN-987654321-5`
 
-</details>
+---
 
-<details>
-<summary><b>📍 Check a GhanaPostGPS digital address</b></summary>
+#### 📍 Check a GhanaPostGPS digital address
 
 **Try this**
 
@@ -367,10 +357,9 @@ From the command line: `cedikit ids check FGN-987654321-5`
 
 From the command line: `cedikit ids check ak0395028`
 
-</details>
+---
 
-<details>
-<summary><b>❌ See what a wrong ID looks like</b></summary>
+#### ❌ See what a wrong ID looks like
 
 **Try this**
 
@@ -382,7 +371,7 @@ From the command line: `cedikit ids check ak0395028`
 
 From the command line: `cedikit ids check GHA-12345-6`
 
-</details>
+---
 
 ### 🪟 Desktop app
 
