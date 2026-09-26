@@ -48,6 +48,7 @@
 
 - [cedikit in plain words](#-cedikit-in-plain-words) ← start here if you're not a programmer
 - [Desktop and web apps](#%EF%B8%8F-desktop-and-web-apps) ← use cedikit without writing code
+  - [Feature tour: try these tests yourself](#-feature-tour-try-these-tests-yourself) ← see every feature working
 - [Why cedikit?](#-why-cedikit)
 - [Features](#-features)
 - [Installation](#-installation)
@@ -207,16 +208,181 @@ Reading pictures happens **on your own computer** (Windows' built-in text recogn
 RapidOCR on Mac and Linux). Nothing is uploaded. It's good but not perfect, so always compare
 the text with your screenshot.
 
-<table>
-<tr>
-<td width="50%"><img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_check.png" alt="Checking a fake payment message"><br><sub><b>Check a message:</b> a fake alert flagged HIGH risk, with the reasons</sub></td>
-<td width="50%"><img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_ledger.png" alt="Account book built from MoMo messages"><br><sub><b>Account book:</b> MoMo messages turned into totals and a table, ready for Excel</sub></td>
-</tr>
-<tr>
-<td width="50%"><img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_phones.png" alt="Cleaning phone numbers"><br><sub><b>Phone numbers:</b> every number written the same way; bad ones in red</sub></td>
-<td width="50%"><img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_money.png" alt="Money in words and fee estimates"><br><sub><b>Money & fees:</b> amounts in words, and fee estimates with their sources</sub></td>
-</tr>
-</table>
+### 🧭 Feature tour: try these tests yourself
+
+Every test below uses made-up data and works offline. Click a feature to open it. The same
+results are checked automatically by cedikit's test suite (`tests/test_app.py`) and by the
+app's built-in self-test (`cedikit-app --selftest`), so this tour stays accurate.
+
+<details open>
+<summary><b>⚠️ Spot a fake payment alert</b></summary>
+
+**Try this**
+
+1. Open the **Check a message** tab.
+2. In **Try an example...**, choose **Fake cash-in**. (It fills in the message and the sender `+233591234567`.)
+
+**You'll see:** 🔴 **HIGH RISK: Very likely fake (score 0.96)**, because it came from a personal phone number, doesn't match any genuine MTN format, and has spelling mistakes (*Avaliable*, *balan*).
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_check_fake.png" alt="A fake cash-in alert flagged HIGH risk">
+
+From the command line: `cedikit fraud check "Cash In  for GHS150.00 from ... Avaliable balan 640.35" --sender +233591234567`
+
+</details>
+
+<details>
+<summary><b>🚫 Spot the 'your account is blocked' trick</b></summary>
+
+**Try this**
+
+1. In **Check a message**, choose the example **Fake 'account blocked'**.
+
+**You'll see:** 🔴 **HIGH RISK (score 0.98)**: personal sender, it tells you what to do with your PIN, and it claims your account is blocked (so you won't check your real balance).
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_check_blocked.png" alt="A fake 'account blocked' message flagged HIGH risk">
+
+From the command line: `cedikit fraud check "SORRY YOU HAVE BEING BLOCKED ... DO NOT TRY YOUR PIN" --sender +233591234567`
+
+</details>
+
+<details>
+<summary><b>✅ See a genuine alert pass</b></summary>
+
+**Try this**
+
+1. In **Check a message**, choose the example **Genuine MTN payment** (sender `MobileMoney`).
+
+**You'll see:** 🟢 **LOW RISK: Looks safe (score 0.00)**, with no warning signs, plus the reminder to still confirm in your MoMo app.
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_check_genuine.png" alt="A genuine MTN payment alert rated LOW risk">
+
+From the command line: `cedikit fraud check "Payment received for GHS 50.00 from KOFI MENSAH ..." --sender MobileMoney`
+
+</details>
+
+<details>
+<summary><b>📷 Check a screenshot instead of typing</b></summary>
+
+**Try this**
+
+1. In **Check a message**, click **Try a sample screenshot** (or **Open screenshot...** for your own).
+
+**You'll see:** *Read 2 messages*, the sender **MobileMoney** filled in automatically from the top of the chat, the newest message checked (🟢 LOW), and a picker to check the other message.
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_check_screenshot.png" alt="cedikit reading two messages from a screenshot">
+
+From the command line: `python -c "from cedikit import ocr; print(ocr.read_screenshot('shot.png'))"`
+
+</details>
+
+<details>
+<summary><b>📒 Turn MoMo messages into an account book</b></summary>
+
+**Try this**
+
+1. Open the **Account book** tab.
+2. Click **Try with sample messages**.
+3. Click **Save as Excel...** to get a workbook with Transactions, Summary, Cash flow and Categories sheets.
+
+**You'll see:** **6 transactions**: money in **GH₵ 245.00**, money out **GH₵ 350.00**, fees **GH₵ 1.00**, last MTN balance **GH₵ 94.00**, and each payment categorised (sales, supplies, cash withdrawal, *loan repayment*).
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_ledger.png" alt="An account book built from six MoMo messages">
+
+From the command line: `cedikit sms parse inbox.txt --sender MobileMoney --export xlsx`
+
+</details>
+
+<details>
+<summary><b>📱 Clean up customers' phone numbers</b></summary>
+
+**Try this**
+
+1. Open the **Phone numbers** tab and click **Try with samples** (or **Open CSV...** for your customer list).
+2. Click **Save cleaned list...** to download the result.
+
+**You'll see:** **7 numbers: 0 valid, 5 fixed, 2 invalid.** Every number is rewritten as `+233...` with its likely network (MTN, Telecel, AT). `12345` (too short) and `021 123 4567` (a landline) are shown in red with the reason.
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_phones.png" alt="A list of phone numbers cleaned, with bad ones in red">
+
+From the command line: `cedikit phone clean customers.csv --column phone`
+
+</details>
+
+<details>
+<summary><b>💰 Amounts in words and MoMo charges</b></summary>
+
+**Try this**
+
+1. Open **Money & fees**, type `1250.50` and click **Show**.
+2. Under *Estimate MoMo charges*, keep **MTN**, **Cash out (withdraw)**, `500`, and click **Estimate**.
+
+**You'll see:** **GH₵ 1,250.50** and *One thousand two hundred and fifty Ghana cedis and fifty pesewas*; then a fee of **GH₵ 5.00**, E-Levy **GH₵ 0.00**, and where those numbers come from.
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_money.png" alt="An amount in words and an MTN cash-out fee estimate">
+
+From the command line: `cedikit money words 1250.50  ·  cedikit fees estimate MTN cash_out 500`
+
+</details>
+
+<details>
+<summary><b>🪪 Check a Ghana Card number</b></summary>
+
+**Try this**
+
+1. Open **Ghana Card & address**, type `gha 123456789 0` (any spacing or case) and click **Check**.
+
+**You'll see:** ✔ **GHA-123456789-0 is correctly written (citizen card)**, plus a masked copy for sharing: `GHA-12*****89-0`.
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_ghana_card.png" alt="A Ghana Card number checked and masked">
+
+From the command line: `cedikit ids check "gha 123456789 0"`
+
+</details>
+
+<details>
+<summary><b>🌍 Check a foreign national's Ghana Card</b></summary>
+
+**Try this**
+
+1. Type `FGN-987654321-5` and click **Check**.
+
+**You'll see:** ✔ **FGN-987654321-5 is correctly written (foreign national card)**. Cards for non-citizens start with `FGN`.
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_foreign_card.png" alt="A foreign national's Ghana Card number checked">
+
+From the command line: `cedikit ids check FGN-987654321-5`
+
+</details>
+
+<details>
+<summary><b>📍 Check a GhanaPostGPS digital address</b></summary>
+
+**Try this**
+
+1. Type `ak0395028` and click **Check**.
+
+**You'll see:** ✔ **AK-039-5028 is correctly written: Kumasi Metropolitan, Ashanti**, with the hyphens added and the district and region looked up.
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_address.png" alt="A GhanaPostGPS address checked, with district and region">
+
+From the command line: `cedikit ids check ak0395028`
+
+</details>
+
+<details>
+<summary><b>❌ See what a wrong ID looks like</b></summary>
+
+**Try this**
+
+1. Type `GHA-12345-6` (too few digits) and click **Check**.
+
+**You'll see:** ✖ **Not a correctly written Ghana Card number or GhanaPostGPS address**, with examples of the right format. (These are format checks only: they never confirm that a card or address really exists.)
+
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/tour_id_invalid.png" alt="An incorrectly written Ghana Card number rejected">
+
+From the command line: `cedikit ids check GHA-12345-6`
+
+</details>
 
 ### 🪟 Desktop app
 
