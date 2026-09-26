@@ -7,6 +7,12 @@ are released as patch versions.
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-09-26
+
+### Fixed
+- Documentation: a command-line example used a real phone number taken from a scam
+  screenshot; it now uses a made-up number. No code changes.
+
 ## [1.2.0] - 2026-09-26
 
 The first PyPI release with the apps: it also brings the 1.1.0 features (desktop app, web app,
