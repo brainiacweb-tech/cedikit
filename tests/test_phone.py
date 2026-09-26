@@ -4,7 +4,7 @@ from hypothesis import strategies as st
 
 from cedikit import InvalidPhoneNumber, phone
 
-ALL_PREFIXES = ["24", "25", "53", "54", "55", "59", "20", "50", "26", "27", "56", "57", "23"]
+ALL_PREFIXES = ["24", "25", "53", "54", "55", "59", "20", "50", "26", "27", "56", "57"]
 
 national_numbers = st.builds(
     lambda p, rest: p + rest,
@@ -45,6 +45,7 @@ def test_normalise_accepts_common_formats(raw: object) -> None:
         ("024412345678", "digits"),
         ("+234244123456", "country code"),
         ("0214123456", "prefix"),  # 021 is an Accra landline code
+        ("0231234567", "prefix"),  # 023 (Glo) is deliberately not supported
         ("024412345a", "not digits"),
         ("hello", "not digits"),
     ],
@@ -98,7 +99,6 @@ def test_format_default_and_bad_style() -> None:
         ("0501234567", "TELECEL"),
         ("0271234567", "AT"),
         ("0591234567", "MTN"),
-        ("0231234567", "GLO"),
     ],
 )
 def test_likely_network(number: str, network: str) -> None:

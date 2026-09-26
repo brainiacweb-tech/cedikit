@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 [Semantic Versioning](https://semver.org/). Data-file updates (prefixes, templates, fee tables)
 are released as patch versions.
 
+## [Unreleased]
+
+### Removed
+- Glo (023) numbers are no longer accepted by `cedikit.phone`; supported networks are MTN,
+  Telecel and AT.
+
 ## [1.0.0] - 2026-09-26
 
 First complete release, published on PyPI (https://pypi.org/project/cedikit/). Everything
@@ -48,7 +54,7 @@ runs offline.
 ### Notes
 - AT Money is out of scope (little used); AT numbers are still handled by `cedikit.phone`.
 - Data checked against sources on 2026-09-26: E-Levy repeal date (2 April 2025, GRA);
-  network prefixes (NCA numbering plan + later MTN assignments; Glo 023 added); MTN cash-out
+  network prefixes (NCA numbering plan + later MTN assignments); MTN cash-out
   and same-network send schedules (third-party tracker, consistent with real messages).
 - Still unconfirmed: MTN cross-network fee, Telecel cash-out fee (the only published table
   contradicts real messages), and district names against GhanaPostGPS's official table.

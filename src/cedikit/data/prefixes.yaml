@@ -12,8 +12,8 @@
 #   The plan predates later assignments: MTN received 025 blocks in 2021
 #     (Graphic Online, "MTN releases new network codes") and uses 053 and 059,
 #     which the plan still shows as unassigned.
-#   Not included: 028 (Kasapa/Expresso, which has shut down) and 029 (National
-#   Security, not public numbers).
+#   Not included: 023 (Glo - not in use for Mobile Money here), 028
+#   (Kasapa/Expresso, which has shut down) and 029 (National Security, not public).
 
 version: "2026-09-26"
 country_code: "233"
@@ -29,6 +29,3 @@ networks:
   AT:
     display_name: AT Ghana
     prefixes: ["26", "27", "56", "57"]
-  GLO:
-    display_name: Glo Mobile Ghana
-    prefixes: ["23"]
