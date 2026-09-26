@@ -54,7 +54,7 @@ cedikit = "cedikit.cli:app"
 [project.urls]
 Homepage = "https://github.com/brainiacweb-tech/cedikit"
 Issues = "https://github.com/brainiacweb-tech/cedikit/issues"
-Documentation = "https://brainiacweb-tech.github.io/cedikit/"
+Documentation = "https://cedikit.readthedocs.io/"
 Changelog = "https://github.com/brainiacweb-tech/cedikit/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]

@@ -1,6 +1,7 @@
 site_name: cedikit
 site_description: A Python toolkit for Ghanaian phone numbers, cedi amounts and Mobile Money transactions
 site_author: Francis Kusi
+site_url: https://cedikit.readthedocs.io/
 repo_url: https://github.com/brainiacweb-tech/cedikit
 repo_name: cedikit
 

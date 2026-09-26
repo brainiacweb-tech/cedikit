@@ -41,7 +41,8 @@ First complete release. Everything runs offline.
   validators.
 - **CLI** (`cedikit`): `phone clean|check`, `money parse|words`, `sms parse|anonymise`,
   `fraud check`, `fees estimate`, `ids check`.
-- Docs site (MkDocs), demo notebook, demo data generator, anonymised fixtures.
+- Docs site (MkDocs, hosted on Read the Docs), demo notebook, demo data generator,
+  anonymised fixtures.
 
 ### Notes
 - AT Money is out of scope (little used); AT numbers are still handled by `cedikit.phone`.

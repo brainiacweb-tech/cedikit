@@ -2,8 +2,8 @@
 
 **A Python toolkit for Ghanaian phone numbers, cedi amounts, and Mobile Money transactions.**
 
-[![CI](https://github.com/brainiacweb-tech/cedikit/actions/workflows/ci.yml/badge.svg)](https://github.com/brainiacweb-tech/cedikit/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/cedikit)](https://pypi.org/project/cedikit/)
+[![Docs](https://readthedocs.org/projects/cedikit/badge/?version=latest)](https://cedikit.readthedocs.io/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/brainiacweb-tech/cedikit/blob/main/LICENSE)
 
 Every Ghanaian app ends up writing the same code: cleaning phone numbers typed five different
@@ -70,7 +70,7 @@ cedikit fraud check "Cash receive for 200.00 ..." --sender 0551234567
 | `cedikit.evaluation` | Parser accuracy and fraud precision/recall on labelled data |
 | Integrations | pandas accessor, Pydantic types, Django and Flask validators |
 
-Full documentation: [the docs site](https://brainiacweb-tech.github.io/cedikit/). The end-to-end demo is
+Full documentation: [the docs site](https://cedikit.readthedocs.io/). The end-to-end demo is
 [notebooks/demo.ipynb](https://github.com/brainiacweb-tech/cedikit/blob/main/notebooks/demo.ipynb), using the data in [examples/](https://github.com/brainiacweb-tech/cedikit/tree/main/examples).
 
 ## Honest outputs
