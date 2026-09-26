@@ -2,6 +2,10 @@
 
 **A Python toolkit for Ghanaian phone numbers, cedi amounts and Mobile Money transactions.**
 
+!!! tip "Not a programmer?"
+    Start with **[cedikit in plain words](explained.md)**: what it does, explained with a
+    story and no technical terms.
+
 Almost every Ghanaian digital product handles the same data: phone numbers typed five different
 ways, cedi amounts, and Mobile Money (MoMo) SMS alerts. cedikit handles them once, carefully,
 with tests.
