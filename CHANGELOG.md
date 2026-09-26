@@ -7,6 +7,17 @@ are released as patch versions.
 
 ## [Unreleased]
 
+### Added
+- **Screenshots**: `cedikit.ocr.read_screenshot()` reads MoMo messages and the sender straight
+  from a screenshot, offline (Windows' built-in OCR on Windows, RapidOCR elsewhere; extra
+  `cedikit[ocr]`). It drops phone clutter (clock, "Sender can't accept replies"...), splits
+  chat bubbles into separate messages, fixes common OCR slips (`GHS50.OO` -> `GHS50.00`) and
+  reads the text at a better size when phones use large fonts.
+- Apps: **"Open screenshot..."** and **"Try a sample screenshot"** in *Check a message* (with a
+  picker when a picture holds several messages, and the sender filled in automatically), and
+  **"Open screenshots..."** / screenshot upload in *Account book*.
+- The stand-alone `.exe` includes screenshot reading and self-tests it.
+
 ## [1.1.0] - 2026-09-26
 
 ### Added

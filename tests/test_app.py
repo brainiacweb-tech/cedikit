@@ -254,6 +254,103 @@ def test_desktop_unreadable_files(
     assert len(errors) == 2 and all("Could not read" in e for e in errors)
 
 
+def _needs_ocr() -> None:
+    from cedikit import ocr
+
+    if ocr.available_engine() is None:
+        pytest.skip("no OCR engine installed")
+
+
+def test_desktop_screenshots(desktop: Any, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    _needs_ocr()
+    module, app = desktop
+    check = app.tabs["check"]
+
+    # A picture with two messages: the newest is checked, the sender filled in
+    shot_file = tmp_path / "shot.png"
+    shot_file.write_bytes(common.sample_screenshot())
+    monkeypatch.setattr(module.filedialog, "askopenfilename", lambda **_k: str(shot_file))
+    check.open_screenshot()
+    assert check.sender.get() == "MobileMoney"
+    assert "LOW RISK" in check.verdict.cget("text")
+    assert "Read 2 messages" in check.ocr_note.cget("text")
+    assert "AMA SERWAA" in module._get(check.message)  # the newest (bottom) message
+
+    check.picker.current(0)  # pick the other message
+    check._pick_message()
+    assert "KWESI APPIAH" in module._get(check.message)
+
+    # Account book from two screenshots
+    monkeypatch.setattr(module.filedialog, "askopenfilenames", lambda **_k: (str(shot_file),) * 2)
+    ledger = app.tabs["ledger"]
+    ledger.open_screenshots()
+    assert "from 2 pictures" in ledger.notes.cget("text")
+    assert len(ledger.table.get_children()) == 2  # the same messages twice: duplicates dropped
+
+
+def test_desktop_screenshot_problems(
+    desktop: Any, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from PIL import Image
+
+    from cedikit import ocr
+
+    module, app = desktop
+    shown: list[str] = []
+    monkeypatch.setattr(module.messagebox, "showinfo", lambda _t, msg: shown.append(msg))
+    monkeypatch.setattr(module.messagebox, "showerror", lambda _t, msg: shown.append(msg))
+    check, ledger = app.tabs["check"], app.tabs["ledger"]
+
+    # Cancelled dialogs do nothing
+    monkeypatch.setattr(module.filedialog, "askopenfilename", lambda **_k: "")
+    monkeypatch.setattr(module.filedialog, "askopenfilenames", lambda **_k: ())
+    check.open_screenshot()
+    ledger.open_screenshots()
+    assert shown == []
+
+    # No OCR engine
+    def unavailable(_image: Any) -> Any:
+        raise ocr.OcrUnavailable('pip install "cedikit[ocr]"')
+
+    monkeypatch.setattr(ocr, "read_screenshot", unavailable)
+    check.use_screenshot(b"x")
+    ledger.use_screenshots([b"x"])
+    assert shown[-2:] == ['pip install "cedikit[ocr]"'] * 2
+
+    # Not a picture, and a picture without any message
+    def broken(_image: Any) -> Any:
+        raise OSError("cannot identify image file")
+
+    monkeypatch.setattr(ocr, "read_screenshot", broken)
+    check.use_screenshot(b"x")
+    assert "Could not read that picture" in shown[-1]
+    monkeypatch.setattr(ocr, "read_screenshot", lambda _image: ocr.Screenshot([], None, "test"))
+    blank = tmp_path / "blank.png"
+    Image.new("RGB", (50, 50), "white").save(blank)
+    check.use_screenshot(str(blank))
+    ledger.use_screenshots([str(blank)])
+    assert "No MoMo message" in shown[-2] and "No MoMo messages" in shown[-1]
+
+    # A single message: no picker, and a note asking for the sender
+    only = ocr.Screenshot(["Payment received for GHS 5.00 from KOFI"], None, "test")
+    monkeypatch.setattr(ocr, "read_screenshot", lambda _image: only)
+    check.use_screenshot(b"x")
+    assert not check.picker.winfo_ismapped()
+    assert "couldn't be read" in check.ocr_note.cget("text")
+
+
+def test_choosing_an_example_clears_the_screenshot(desktop: Any) -> None:
+    _needs_ocr()
+    _module, app = desktop
+    check = app.tabs["check"]
+    check.try_sample_screenshot()
+    assert check.shot is not None and check.ocr_note.cget("text")
+    check.example.set("Fake cash-in")
+    check._load_example()
+    assert check.shot is None and check.ocr_note.cget("text") == ""
+    assert not check.picker.winfo_ismapped()
+
+
 # -- web app ---------------------------------------------------------------------------
 
 
@@ -270,6 +367,7 @@ def _texts(at: Any) -> str:
     parts = [m.value for m in at.markdown] + [e.value for e in at.info]
     parts += [e.value for e in at.success] + [e.value for e in at.error]
     parts += [e.value for e in at.warning] + [c.value for c in at.code]
+    parts += [c.value for c in at.caption]
     return "\n".join(str(p) for p in parts)
 
 
@@ -292,6 +390,20 @@ def test_web_ledger_and_phones(web: Any) -> None:
     assert metrics["Money in"] == "GH₵ 245.00" and metrics["Net"] == "-GH₵ 106.00"
     assert "7 numbers: 0 valid, 5 fixed, 2 invalid" in _texts(web)
     assert len(web.dataframe) == 2
+
+
+def test_web_sample_screenshot(web: Any) -> None:
+    _needs_ocr()
+    web.button(key="check_sample_image").click().run()
+    assert not web.exception
+    assert web.text_input(key="check_sender").value == "MobileMoney"
+    assert "AMA SERWAA" in web.text_area(key="check_text").value
+    text = _texts(web)
+    assert "LOW RISK: Looks safe" in text and "Read 2 messages" in text
+
+    web.selectbox(key="shot_choice").select(0).run()  # the other message in the picture
+    assert "KWESI APPIAH" in web.text_area(key="check_text").value
+    assert "LOW RISK" in _texts(web)
 
 
 def test_web_money_fees_and_ids(web: Any) -> None:

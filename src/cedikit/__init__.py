@@ -3,7 +3,7 @@
 Everything runs offline; no data leaves the device.
 """
 
-from cedikit import fees, fraud, ids, ledger, money, phone, sms
+from cedikit import fees, fraud, ids, ledger, money, ocr, phone, sms
 from cedikit.exceptions import (
     CedikitError,
     CediTypeError,
@@ -30,6 +30,7 @@ __all__ = [
     "ids",
     "ledger",
     "money",
+    "ocr",
     "phone",
     "sms",
 ]

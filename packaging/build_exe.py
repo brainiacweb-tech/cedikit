@@ -24,7 +24,8 @@ EXE = ROOT / "dist-app" / "cedikit-app.exe"  # kept out of dist/, which holds th
 # Big optional libraries the desktop app never uses: keep them out of the .exe.
 EXCLUDE = [
     "pandas", "numpy", "matplotlib", "streamlit", "sklearn", "scipy", "joblib",
-    "pydantic", "django", "wtforms", "typer", "click", "rich", "PIL", "IPython", "pytest",
+    "pydantic", "django", "wtforms", "typer", "click", "rich", "IPython", "pytest",
+    "rapidocr_onnxruntime", "onnxruntime", "cv2",
 ]  # fmt: skip
 
 
@@ -36,6 +37,7 @@ def main() -> int:
         "--icon", str(ICON),
         "--collect-data", "cedikit",      # YAML data files, icon
         "--hidden-import", "openpyxl",    # Excel export is imported lazily
+        "--collect-all", "winrt",         # Windows OCR for screenshots, imported lazily
         "--distpath", str(EXE.parent),
         "--workpath", str(ROOT / "build"),
         "--specpath", str(ROOT / "build"),

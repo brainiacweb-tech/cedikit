@@ -30,6 +30,7 @@ By the end of the month she has **hundreds** of these messages, and four problem
 | 📱 **Number tidier** | a teacher who makes everyone write their name the same way | Rewrites every phone number in one standard form, and says which network it most likely belongs to (MTN, Telecel or AT) |
 | 💰 **Money counter** | a shopkeeper who never loses a single pesewa | Adds, rounds and writes money exactly, even in words: *"Forty-five Ghana cedis and fifty pesewas"* |
 | 📩 **Message reader** | a secretary who reads every MoMo text for you | Picks out who paid, how much, when, the fee and the new balance, and writes it down neatly |
+| 📷 **Screenshot reader** | someone reading a letter out loud to you | Reads the message straight off a **screenshot**, so you don't have to type or copy anything |
 | 📒 **Account book** | an accountant | Adds everything up: money in, money out, fees, best customers, weekly totals. Then makes an **Excel file** and **charts** |
 | 🚨 **Scam detector** | a wise security guard | Looks at a payment message and says **"looks safe" ✅** or **"be careful" ⚠️**, and explains *why* |
 | 🧾 **Fee calculator** | a friend who knows the price list | Estimates how much the network will charge for sending or withdrawing money |
@@ -47,7 +48,8 @@ flowchart LR
     E --> G["⚠️ Be careful:<br/>here's why"]
 ```
 
-1. **You give cedikit the messages**: copy them from the phone, or an app does it for you.
+1. **You give cedikit the messages**: copy them from the phone, **take a screenshot**, or an
+   app does it for you.
 2. **It reads each one** and turns it into a neat line: *"50 cedis, from Kofi Mensah,
    Monday 10:15am, balance 320 cedis."*
 3. **It adds everything up** into a monthly summary, just like an accountant's report.
@@ -81,10 +83,12 @@ numbers or money details anywhere on the internet.
 
 ## 👥 Who is it for?
 
+- 🏪 **Shop owners** can use the **desktop app** directly: no coding, just buttons
+  ([see the apps page](apps.md)).
 - 👩‍💻 **Programmers** use it like **ready-made building blocks** to build apps for Ghanaian
   businesses, so they don't have to build these helpers from scratch.
-- 🏪 **Shop owners and traders** benefit through those apps: cleaner records, automatic
-  accounts and scam warnings.
+- 🏪 **Traders** also benefit through apps other people build on cedikit: cleaner records,
+  automatic accounts and scam warnings.
 - 🎓 **Students and researchers** use it to study Mobile Money data.
 
 ## 📚 Words you might see

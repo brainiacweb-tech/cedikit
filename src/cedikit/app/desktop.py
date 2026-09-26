@@ -19,7 +19,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from typing import Any
 
-from cedikit import __version__, fraud, money, phone
+from cedikit import __version__, fraud, money, ocr, phone
 from cedikit.app import common
 from cedikit.exceptions import CedikitError
 from cedikit.ledger import Ledger, read_messages, split_messages
@@ -101,6 +101,24 @@ def _fill(tree: ttk.Treeview, rows: list[dict[str, str]], bad: str | None = None
         tree.insert("", "end", values=[row.get(c, "") for c in columns], tags=tags)
 
 
+IMAGE_TYPES = [("Pictures", "*.png *.jpg *.jpeg *.webp *.bmp"), ("All files", "*.*")]
+
+
+def _read_screenshot(widget: tk.Misc, image: str | bytes) -> ocr.Screenshot | None:
+    """Read a screenshot, showing a busy cursor; errors are shown to the user."""
+    widget.configure(cursor="watch")  # type: ignore[call-arg]
+    widget.update_idletasks()
+    try:
+        return ocr.read_screenshot(image)
+    except ocr.OcrUnavailable as exc:
+        messagebox.showerror("cedikit", str(exc))
+    except (OSError, ValueError, RuntimeError) as exc:
+        messagebox.showerror("cedikit", f"Could not read that picture:\n{exc}")
+    finally:
+        widget.configure(cursor="")  # type: ignore[call-arg]
+    return None
+
+
 def _hint(parent: tk.Misc, text: str) -> ttk.Label:
     label = ttk.Label(parent, text=text, style="Hint.TLabel", wraplength=px(880), justify="left")
     label.pack(anchor="w", pady=(0, 6))
@@ -118,9 +136,24 @@ class CheckTab(ttk.Frame):
         ttk.Label(self, text="Is this payment message real?", style="Title.TLabel").pack(anchor="w")
         _hint(
             self,
-            "Paste the MoMo message you received and who it came from. cedikit looks for the "
-            "warning signs of a fake alert and explains what it finds.",
+            "Paste the MoMo message you received and who it came from, or open a screenshot of "
+            "it. cedikit looks for the warning signs of a fake alert and explains what it finds.",
         )
+        self.shot: ocr.Screenshot | None = None
+        pictures = ttk.Frame(self)
+        pictures.pack(fill="x", pady=(0, 6))
+        ttk.Button(pictures, text="Open screenshot...", command=self.open_screenshot).pack(
+            side="left"
+        )
+        ttk.Button(
+            pictures, text="Try a sample screenshot", command=self.try_sample_screenshot
+        ).pack(side="left", padx=6)
+        self.picker = ttk.Combobox(pictures, state="readonly", width=70)
+        self.picker.bind("<<ComboboxSelected>>", self._pick_message)
+        self.ocr_note = ttk.Label(
+            self, text="", style="Hint.TLabel", wraplength=px(900), justify="left"
+        )
+        self.ocr_note.pack(anchor="w")
         self.message = _text_box(self, 6)
         self.message.pack(fill="x")
 
@@ -147,7 +180,55 @@ class CheckTab(ttk.Frame):
         self.details.pack(fill="both", expand=True)
         _set(self.details, "The result will appear here.", readonly=True)
 
+    def open_screenshot(self) -> None:
+        path = filedialog.askopenfilename(title="Open a screenshot", filetypes=IMAGE_TYPES)
+        if path:
+            self.use_screenshot(path)
+
+    def try_sample_screenshot(self) -> None:
+        self.use_screenshot(common.sample_screenshot())
+
+    def use_screenshot(self, image: str | bytes) -> None:
+        shot = _read_screenshot(self, image)
+        if shot is None:
+            return
+        if not shot.messages:
+            messagebox.showinfo(
+                "cedikit",
+                "No MoMo message was found in that picture. Try a clearer screenshot, "
+                "or paste the message text instead.",
+            )
+            return
+        self.shot = shot
+        count = len(shot.messages)
+        self.picker.configure(
+            values=[f"Message {i + 1} of {count}: {m[:80]}..." for i, m in enumerate(shot.messages)]
+        )
+        self.picker.current(count - 1)  # the newest message is at the bottom of the screen
+        if count > 1:
+            self.picker.pack(side="left", padx=12)
+        else:
+            self.picker.pack_forget()
+        if shot.sender:
+            self.sender.delete(0, "end")
+            self.sender.insert(0, shot.sender)
+        self.ocr_note.configure(text=common.screenshot_note(shot))
+        _set(self.message, shot.messages[-1])
+        self.check()
+
+    def _pick_message(self, _event: object = None) -> None:
+        if self.shot is not None:
+            _set(self.message, self.shot.messages[self.picker.current()])
+            self.check()
+
+    def _clear_screenshot(self) -> None:
+        """Forget the last screenshot, so its picker and note don't describe other text."""
+        self.shot = None
+        self.picker.pack_forget()
+        self.ocr_note.configure(text="")
+
     def _load_example(self, _event: object = None) -> None:
+        self._clear_screenshot()
         text, sender = common.EXAMPLES[self.example.get()]
         _set(self.message, text)
         self.sender.delete(0, "end")
@@ -201,6 +282,9 @@ class LedgerTab(ttk.Frame):
         row = ttk.Frame(self)
         row.pack(fill="x", pady=8)
         ttk.Button(row, text="Open file...", command=self.open_file).pack(side="left")
+        ttk.Button(row, text="Open screenshots...", command=self.open_screenshots).pack(
+            side="left", padx=(6, 0)
+        )
         ttk.Button(row, text="Try with sample messages", command=self.load_sample).pack(
             side="left", padx=6
         )
@@ -241,6 +325,34 @@ class LedgerTab(ttk.Frame):
                 "Balance": 95,
                 "Category": 140,
             },
+        )
+
+    def open_screenshots(self) -> None:
+        paths = filedialog.askopenfilenames(title="Open screenshots", filetypes=IMAGE_TYPES)
+        if paths:
+            self.use_screenshots(list(paths))
+
+    def use_screenshots(self, images: list[str | bytes]) -> None:
+        """Read MoMo messages from one or more screenshots into the account book."""
+        messages: list[str] = []
+        sender: str | None = None
+        for image in images:
+            shot = _read_screenshot(self, image)
+            if shot is None:
+                return
+            messages += shot.messages
+            sender = sender or shot.sender
+        if not messages:
+            messagebox.showinfo("cedikit", "No MoMo messages were found in those pictures.")
+            return
+        self.file_messages = None
+        _set(self.messages, "\n\n".join(messages))
+        if sender:
+            self.sender.set(sender)
+        self.build()
+        combined = ocr.Screenshot(messages, sender, "")
+        self.notes.configure(
+            text=common.screenshot_note(combined, len(images)) + "\n\n" + self.notes.cget("text")
         )
 
     def open_file(self) -> None:
@@ -683,6 +795,14 @@ def _selftest(app: CedikitApp, screenshots: Path | None) -> None:
     """Exercise every tab (used by tests and to check packaged builds)."""
     check = app.tabs["check"]
     assert isinstance(check, CheckTab)
+    packaged_windows_build = getattr(sys, "frozen", False) and sys.platform == "win32"
+    if packaged_windows_build:  # the .exe must include Windows OCR
+        assert ocr.available_engine() is not None, "screenshot reading (OCR) not bundled"
+    if ocr.available_engine() is not None:  # proves screenshot reading works
+        check.try_sample_screenshot()
+        assert check.shot is not None and len(check.shot.messages) == 2, "screenshot not read"
+        assert check.sender.get() == "MobileMoney", "sender not read from screenshot"
+        assert "LOW RISK" in check.verdict.cget("text")
     check.example.set("Fake cash-in")
     check._load_example()
     ledger = app.tabs["ledger"]

@@ -52,6 +52,7 @@ nav:
       - Phone numbers: modules/phone.md
       - Money: modules/money.md
       - SMS parser: modules/sms.md
+      - Screenshots (OCR): modules/ocr.md
       - Fraud detection: modules/fraud.md
       - Ledger: modules/ledger.md
       - Fees: modules/fees.md

@@ -16,12 +16,13 @@ from typing import Any
 
 import streamlit as st
 
-from cedikit import __version__, fraud, money, phone
+from cedikit import __version__, fraud, money, ocr, phone
 from cedikit.app import common
 from cedikit.exceptions import CedikitError
 from cedikit.ledger import Ledger, read_messages, split_messages
 
 GREEN, GOLD, RED = "#006B3F", "#FCD116", "#CE1126"
+IMAGE_TYPES = ["png", "jpg", "jpeg", "webp", "bmp"]
 
 
 def _header() -> None:
@@ -66,17 +67,81 @@ def _set_example() -> None:
         text, sender = common.EXAMPLES[choice]
         st.session_state["check_text"] = text
         st.session_state["check_sender"] = sender
+        st.session_state.pop("shot", None)  # the screenshot note no longer applies
 
 
 # -- tabs -------------------------------------------------------------------------------
 
 
+def _read_image(key: str, data: bytes) -> ocr.Screenshot | None:
+    """Read a screenshot once per upload (Streamlit reruns the script on every click)."""
+    cache: dict[str, ocr.Screenshot] = st.session_state.setdefault("ocr_cache", {})
+    if key not in cache:
+        try:
+            cache[key] = ocr.read_screenshot(data)
+        except ocr.OcrUnavailable as exc:
+            st.error(str(exc))
+            return None
+        except (OSError, ValueError, RuntimeError) as exc:
+            st.error(f"Could not read that picture: {exc}")
+            return None
+    return cache[key]
+
+
+def _use_screenshot(shot: ocr.Screenshot) -> None:
+    """Put the newest message and the sender from a screenshot into the form."""
+    st.session_state["shot"] = shot
+    st.session_state["shot_choice"] = len(shot.messages) - 1
+    st.session_state["check_text"] = shot.messages[-1]
+    if shot.sender:
+        st.session_state["check_sender"] = shot.sender
+    st.session_state["auto_check"] = True
+
+
+def _choose_shot_message() -> None:
+    shot = st.session_state.get("shot")
+    if shot is not None:
+        st.session_state["check_text"] = shot.messages[st.session_state["shot_choice"]]
+        st.session_state["auto_check"] = True
+
+
 def check_tab() -> None:
     st.subheader("Is this payment message real?")
     st.caption(
-        "Paste the MoMo message you received and who it came from. cedikit looks for the "
-        "warning signs of a fake alert and explains what it finds."
+        "Paste the MoMo message you received and who it came from, or upload a screenshot of "
+        "it. cedikit looks for the warning signs of a fake alert and explains what it finds."
     )
+    pic, sample = st.columns([3, 1])
+    image = pic.file_uploader(
+        "Upload a screenshot of the message", type=IMAGE_TYPES, key="check_image"
+    )
+    new_shot: tuple[str, bytes] | None = None
+    if sample.button("Try a sample screenshot", key="check_sample_image"):
+        new_shot = ("sample", common.sample_screenshot())
+    elif image is not None and st.session_state.get("shot_id") != image.file_id:
+        new_shot = (image.file_id, image.getvalue())
+    if new_shot is not None:
+        st.session_state["shot_id"] = new_shot[0]
+        shot = _read_image(*new_shot)
+        if shot is not None and shot.messages:
+            _use_screenshot(shot)
+        elif shot is not None:
+            st.info(
+                "No MoMo message was found in that picture. Try a clearer screenshot, or paste "
+                "the message text instead."
+            )
+    shot = st.session_state.get("shot")
+    if shot is not None:
+        st.caption(common.screenshot_note(shot))
+        if len(shot.messages) > 1:
+            st.selectbox(
+                "Which message in the picture?",
+                list(range(len(shot.messages))),
+                key="shot_choice",
+                on_change=_choose_shot_message,
+                format_func=lambda i: f"Message {i + 1}: {shot.messages[i][:90]}...",
+            )
+
     st.selectbox(
         "Or try an example",
         ["", *common.EXAMPLES],
@@ -86,7 +151,8 @@ def check_tab() -> None:
     )
     text = st.text_area("Payment message", key="check_text", height=150)
     sender = st.text_input("Sent by (the name or number shown on your phone)", key="check_sender")
-    if st.button("Check message", type="primary", key="check_button"):
+    clicked = st.button("Check message", type="primary", key="check_button")
+    if clicked or st.session_state.pop("auto_check", False):
         if not text.strip():
             st.info("Paste a payment message first.")
             return
@@ -118,6 +184,10 @@ def ledger_tab() -> None:
     left, right = st.columns([3, 1])
     with right:
         upload = st.file_uploader("Upload a file", type=["txt", "csv"], key="ledger_file")
+        images = st.file_uploader(
+            "Or upload screenshots", type=IMAGE_TYPES, accept_multiple_files=True,
+            key="ledger_images",
+        )  # fmt: skip
         if st.button("Try with sample messages", key="ledger_sample"):
             st.session_state["ledger_text"] = common.SAMPLE_MESSAGES
             st.session_state["ledger_sender"] = "MobileMoney"
@@ -128,9 +198,17 @@ def ledger_tab() -> None:
     with left:
         text = st.text_area("MoMo messages", key="ledger_text", height=210)
 
-    source: list[Any] = (
-        read_messages(_upload_to_path(upload)) if upload is not None else split_messages(text)
-    )
+    shots = [s for s in (_read_image(f.file_id, f.getvalue()) for f in images or []) if s]
+    source: list[Any]
+    if upload is not None:
+        source = read_messages(_upload_to_path(upload))
+    elif shots:
+        messages = [m for shot in shots for m in shot.messages]
+        sender = sender or next((shot.sender for shot in shots if shot.sender), "")
+        source = messages
+        st.caption(common.screenshot_note(ocr.Screenshot(messages, sender or None, ""), len(shots)))
+    else:
+        source = split_messages(text)
     if not source:
         st.info("Paste some messages, upload a file, or try the samples.")
         return

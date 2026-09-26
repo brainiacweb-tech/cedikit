@@ -10,7 +10,7 @@
 [![Docs](https://readthedocs.org/projects/cedikit/badge/?version=latest)](https://cedikit.readthedocs.io/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-CE1126.svg)](https://github.com/brainiacweb-tech/cedikit/blob/main/LICENSE)
 <br>
-![Tests](https://img.shields.io/badge/tests-379%20passing-006B3F)
+![Tests](https://img.shields.io/badge/tests-403%20passing-006B3F)
 ![Coverage](https://img.shields.io/badge/coverage-99%25-006B3F)
 ![mypy](https://img.shields.io/badge/mypy-strict-2A6DB0)
 ![Ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)
@@ -32,7 +32,8 @@
 > [!TIP]
 > **Not a programmer? You don't need to write any code.** cedikit also comes as a normal
 > **Windows program**: [download `cedikit-app.exe`](https://github.com/brainiacweb-tech/cedikit/releases/latest),
-> double-click it, and use the buttons to check payment messages for scams, turn your MoMo
+> double-click it, and use the buttons to check payment messages (or **screenshots** of them)
+> for scams, turn your MoMo
 > messages into an Excel account book, and clean up customers' phone numbers.
 > [See the apps ↓](#%EF%B8%8F-desktop-and-web-apps)
 
@@ -98,6 +99,7 @@ By the end of the month she has **hundreds** of these messages, and four problem
 | 📱 **Number tidier** | a teacher who makes everyone write their name the same way | Rewrites every phone number in one standard form, and says which network it most likely belongs to (MTN, Telecel or AT) |
 | 💰 **Money counter** | a shopkeeper who never loses a single pesewa | Adds, rounds and writes money exactly, even in words: *"Forty-five Ghana cedis and fifty pesewas"* |
 | 📩 **Message reader** | a secretary who reads every MoMo text for you | Picks out who paid, how much, when, the fee and the new balance, and writes it down neatly |
+| 📷 **Screenshot reader** | someone reading a letter out loud to you | Reads the message straight off a **screenshot**, so you don't have to type or copy anything |
 | 📒 **Account book** | an accountant | Adds everything up: money in, money out, fees, best customers, weekly totals. Then makes an **Excel file** and **charts** |
 | 🚨 **Scam detector** | a wise security guard | Looks at a payment message and says **"looks safe" ✅** or **"be careful" ⚠️**, and explains *why* |
 | 🧾 **Fee calculator** | a friend who knows the price list | Estimates how much the network will charge for sending or withdrawing money |
@@ -115,7 +117,8 @@ flowchart LR
     E --> G["⚠️ Be careful:<br/>here's why"]
 ```
 
-1. **You give cedikit the messages**: copy them from the phone, or an app does it for you.
+1. **You give cedikit the messages**: copy them from the phone, **take a screenshot**, or an
+   app does it for you.
 2. **It reads each one** and turns it into a neat line: *"50 cedis, from Kofi Mensah,
    Monday 10:15am, balance 320 cedis."*
 3. **It adds everything up** into a monthly summary, just like an accountant's report.
@@ -179,14 +182,30 @@ it without writing code. Both apps have the same six tabs and give exactly the s
 
 | Tab | What you do |
 |---|---|
-| ⚠️ **Check a message** | Paste a payment SMS and who sent it → **LOW / MEDIUM / HIGH** risk, with reasons |
-| 📒 **Account book** | Paste MoMo messages or open a file → totals, a table of every payment, **Save as Excel** |
+| ⚠️ **Check a message** | Paste a payment SMS **or open a screenshot of it** → **LOW / MEDIUM / HIGH** risk, with reasons |
+| 📒 **Account book** | Paste MoMo messages, open a file **or open screenshots** → totals, a table of every payment, **Save as Excel** |
 | 📱 **Phone numbers** | Paste a list or open a customer CSV → cleaned numbers, networks, bad numbers flagged |
 | 💰 **Money & fees** | Amounts in words; estimate MoMo charges |
 | 🪪 **Ghana Card & address** | Check a Ghana Card number or GhanaPostGPS address is written correctly |
 | 📘 **About** | What cedikit does, and the safety reminder |
 
 Every tab has a **"Try with samples"** button, so you can see it working straight away.
+
+### 📷 Just take a screenshot
+
+Most people have the message as a **screenshot**, not as text. Open the screenshot and cedikit
+**reads the message off the picture**, **fills in who sent it** (from the name or number at the
+top of the chat), and checks it. If the picture shows several messages, pick the one you want.
+The *Account book* tab can read many screenshots at once.
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/screenshots/desktop_check_screenshot.png" alt="cedikit reading a MoMo message from a screenshot" width="760">
+<br><sub>A screenshot read: two messages found, sender filled in automatically, verdict shown</sub>
+</div>
+
+Reading pictures happens **on your own computer** (Windows' built-in text recognition, or
+RapidOCR on Mac and Linux). Nothing is uploaded. It's good but not perfect, so always compare
+the text with your screenshot.
 
 <table>
 <tr>
@@ -274,7 +293,8 @@ Exact `Decimal` parsing of `"GH₵1.2k"`, `"50p"`, `"(GHS 5.00)"`; formatting
 ### 📩 `sms`
 Parses **MTN MoMo** and **Telecel Cash** SMS into typed transactions with a
 confidence score, from **12 templates** built from real messages. Includes an
-**anonymiser** that keeps balances consistent.
+**anonymiser** that keeps balances consistent, and 📷 **`ocr`**: read messages (and the sender)
+straight from **screenshots**, offline.
 
 ### 🚨 `fraud`
 Rates a payment SMS **LOW / MEDIUM / HIGH** and explains why: personal-number
@@ -332,8 +352,9 @@ Requires **Python 3.10+**. The core depends only on `PyYAML` and `Typer`.
 | `ml` | scikit-learn, joblib | `fraud.classifier.ScamClassifier` |
 | `pydantic` | pydantic | `GhanaPhone`, `CediAmount` field types |
 | `django` · `flask` | django · wtforms | Form and model validators |
-| `app` | openpyxl | The desktop app with Excel export (`cedikit app`) |
-| `web` | streamlit, openpyxl | The web app (`cedikit web`) |
+| `ocr` | Pillow + Windows OCR / RapidOCR | `ocr.read_screenshot("shot.png")`: messages from screenshots |
+| `app` | openpyxl, ocr | The desktop app with Excel export and screenshots (`cedikit app`) |
+| `web` | streamlit, openpyxl, ocr | The web app (`cedikit web`) |
 
 > [!TIP]
 > On Windows, if `cedikit` isn't recognised after installing, pip has put it in a folder that
@@ -411,6 +432,17 @@ Reasons:
 Before releasing goods or cash, confirm the payment in your official Mobile Money app ...
 ```
 
+### 📷 Screenshots
+
+```python
+from cedikit import ocr, fraud
+
+shot = ocr.read_screenshot("whatsapp_image.jpg")  # needs: pip install "cedikit[ocr]"
+shot.sender  # 'MobileMoney' (read from the chat header)
+for message in shot.messages:  # one entry per chat bubble
+    print(fraud.check(message, sender=shot.sender).risk)
+```
+
 ### 🧾 Fees and 🪪 IDs
 
 ```python
@@ -475,6 +507,7 @@ flowchart TB
         PHONE["📱 phone"]
         MONEY["💰 money"]
         SMS["📩 sms<br/>parser · anonymiser"]
+        OCR["📷 ocr<br/>screenshots"]
         FRAUD["🚨 fraud<br/>rules · classifier"]
         LEDGER["📒 ledger"]
         FEES["🧾 fees"]
@@ -498,6 +531,7 @@ flowchart TB
     API --> Core
 
     SMS --> PHONE
+    OCR --> SMS
     SMS --> MONEY
     FRAUD --> SMS
     FRAUD --> LEDGER
@@ -524,6 +558,7 @@ flowchart TB
 | `fraud` | `sms`, `ledger`, `phone`, `money` | `fraud/scam_phrases.yaml` |
 | `fees` | `money` | `fees/tables/*.yaml` |
 | `ids` | — | `ids/regions.yaml` |
+| `ocr` | `sms` (to recognise senders) | — (uses Windows OCR or RapidOCR) |
 | `evaluation` | `sms`, `fraud` | your labelled YAML files |
 
 ---
@@ -640,6 +675,7 @@ cedikit/
 │   ├── money.py                 # 💰 Decimal parsing/formatting, to_words, Cedi type
 │   ├── ledger.py                # 📒 Ledger, summaries, cash flow, exports, charts
 │   ├── evaluation.py            # 📏 parser accuracy, fraud precision/recall
+│   ├── ocr.py                   # 📷 read messages + sender from screenshots
 │   ├── cli.py                   # 💻 the `cedikit` command (Typer)
 │   ├── exceptions.py            # CedikitError and friends
 │   ├── py.typed                 # ships type hints to users
@@ -667,7 +703,7 @@ cedikit/
 │       ├── desktop.py           # 🪟 Tkinter desktop app
 │       ├── web.py               # 🌐 Streamlit web app
 │       └── cedikit.ico          # app icon
-├── 📂 tests/                    # 379 tests, anonymised fixtures in fixtures/sample_messages/
+├── 📂 tests/                    # 403 tests, anonymised fixtures in fixtures/sample_messages/
 ├── 📂 docs/                     # MkDocs site (Read the Docs)
 ├── 📂 examples/                 # synthetic demo data + generator
 ├── 📂 notebooks/                # end-to-end demo notebook
@@ -743,11 +779,11 @@ classDiagram
 
 | Check | Result |
 |---|---|
-| 🧪 Tests (pytest + Hypothesis property tests) | **379 passing** |
+| 🧪 Tests (pytest + Hypothesis property tests) | **403 passing** |
 | 📈 Line coverage | **99%** (minimum enforced: 90%) |
 | 🔍 Type checking | **mypy strict**, zero errors |
 | 🧹 Lint and format | **Ruff**, zero issues |
-| 📚 Docstring examples | 29 doctests run as tests |
+| 📚 Docstring examples | 30 doctests run as tests |
 | 📄 Docs build | `mkdocs build --strict` |
 | 🐍 Python versions | 3.10 · 3.11 · 3.12 · 3.13 |
 
@@ -771,7 +807,8 @@ mkdocs serve                             # docs at http://127.0.0.1:8000
 
 ## 🔐 Privacy and ethics
 
-- 🔒 **Offline only.** Nothing is uploaded, logged or stored unless you export it.
+- 🔒 **Offline only.** Nothing is uploaded, logged or stored unless you export it. Even
+  screenshots are read on your own computer.
 - 🕶️ **Masking helpers:** `phone.mask()` and `ghana_card.mask()` for logs and reports.
 - 🧹 **Anonymised data only.** Every sample message in this repository was anonymised
   before being committed. `cedikit sms anonymise` does it for you and keeps balances
@@ -787,6 +824,8 @@ mkdocs serve                             # docs at http://127.0.0.1:8000
 - **Formats:** MTN MoMo and Telecel Cash only (12 templates). AT Money is out of scope.
 - **Fees** are estimates. MTN's cross-network fee and Telecel's cash-out fee are unknown
   until confirmed from real messages or official tariffs.
+- **Screenshots:** text recognition can misread characters; cedikit fixes common slips
+  (`GHS50.OO` → `GHS50.00`) but the text should always be compared with the picture.
 - **Ghana Card** check digits can't be verified; the algorithm isn't published.
 - **ID checks** confirm format only, never that a card or address exists.
 - **Fraud accuracy** has so far been measured on the messages used to write the rules; a

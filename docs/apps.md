@@ -1,18 +1,34 @@
 # 🖥️ Desktop and web apps
 
-*New in 1.1.0.* cedikit also comes as **software with windows and buttons**, so anyone can use
+*New in version 1.1.0.* cedikit also comes as **software with windows and buttons**, so anyone can use
 it without writing code. Both apps have the same six tabs and give exactly the same answers.
 
 | Tab | What you do |
 |---|---|
-| ⚠️ **Check a message** | Paste a payment SMS and who sent it → **LOW / MEDIUM / HIGH** risk, with reasons |
-| 📒 **Account book** | Paste MoMo messages or open a file → totals, a table of every payment, **Save as Excel** |
+| ⚠️ **Check a message** | Paste a payment SMS **or open a screenshot of it** → **LOW / MEDIUM / HIGH** risk, with reasons |
+| 📒 **Account book** | Paste MoMo messages, open a file **or open screenshots** → totals, a table of every payment, **Save as Excel** |
 | 📱 **Phone numbers** | Paste a list or open a customer CSV → cleaned numbers, networks, bad numbers flagged |
 | 💰 **Money & fees** | Amounts in words; estimate MoMo charges |
 | 🪪 **Ghana Card & address** | Check a Ghana Card number or GhanaPostGPS address is written correctly |
 | 📘 **About** | What cedikit does, and the safety reminder |
 
 Every tab has a **"Try with samples"** button, so you can see it working straight away.
+
+## 📷 Just take a screenshot
+
+Most people have the message as a **screenshot**, not as text. Open the screenshot and cedikit
+**reads the message off the picture**, **fills in who sent it** (from the name or number at the
+top of the chat), and checks it. If the picture shows several messages, pick the one you want.
+The *Account book* tab can read many screenshots at once.
+
+<div align="center">
+<img src="assets/screenshots/desktop_check_screenshot.png" alt="cedikit reading a MoMo message from a screenshot" width="760">
+<br><sub>A screenshot read: two messages found, sender filled in automatically, verdict shown</sub>
+</div>
+
+Reading pictures happens **on your own computer** (Windows' built-in text recognition, or
+RapidOCR on Mac and Linux). Nothing is uploaded. It's good but not perfect, so always compare
+the text with your screenshot.
 
 <table>
 <tr>

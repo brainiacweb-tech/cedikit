@@ -9,11 +9,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from typing import Any
 
 from cedikit import fees, money
 from cedikit.fraud import FraudReport
 from cedikit.ids import ghana_card, gpgps
-from cedikit.ledger import Ledger
+from cedikit.ledger import Ledger, split_messages
+from cedikit.ocr import Screenshot
 from cedikit.phone import CleanReport
 from cedikit.sms.models import TransactionType
 
@@ -32,6 +34,8 @@ __all__ = [
     "ledger_notes",
     "network_name",
     "phone_rows",
+    "sample_screenshot",
+    "screenshot_note",
     "summary_items",
     "transaction_rows",
 ]
@@ -93,6 +97,64 @@ SAMPLE_MESSAGES = "\n\n".join(
         "TRANSACTION FEE: 0.00",
     ]
 )
+
+
+def screenshot_note(shot: Screenshot, pictures: int = 1) -> str:
+    """What was read from screenshot(s), and a reminder to check it."""
+    count = len(shot.messages)
+    found = f"Read {count} message{'s' if count != 1 else ''}"
+    if pictures > 1:
+        found += f" from {pictures} pictures"
+    if count > 1 and pictures == 1:
+        found += " (showing the newest; pick another above)"
+    sender = (
+        f"Sender read from the picture: {shot.sender}. Check that it's right."
+        if shot.sender
+        else "The sender couldn't be read from the picture: please type it in."
+    )
+    return (
+        f"{found}. {sender} Compare the text with your screenshot, because reading "
+        "pictures isn't perfect."
+    )
+
+
+def sample_screenshot() -> bytes:
+    """A made-up phone screenshot (PNG) with two MoMo messages, for demos and self-tests.
+
+    Drawn with Pillow, so it needs the ``ocr`` extra.
+    """
+    import io
+    import textwrap
+
+    from PIL import Image, ImageDraw, ImageFont
+
+    def font(size: int) -> Any:
+        for name in ("segoeui.ttf", "arial.ttf", "DejaVuSans.ttf", "Helvetica.ttc"):
+            try:
+                return ImageFont.truetype(name, size)
+            except OSError:
+                continue
+        return ImageFont.load_default(size=size)  # pragma: no cover
+
+    width, height = 720, 1280
+    img = Image.new("RGB", (width, height), "#ffffff")
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([0, 0, width, 150], fill="#f3f4f6")
+    draw.text((32, 18), "10:24", font=font(26), fill="#111111")
+    draw.text((width // 2, 95), "MobileMoney", font=font(34), fill="#111111", anchor="mm")
+    body, line_height, y = font(28), 40, 200
+    messages = split_messages(SAMPLE_MESSAGES)[:2]
+    for message in messages:
+        lines = textwrap.wrap(message, 38)
+        box_height = len(lines) * line_height + 36
+        draw.rounded_rectangle([24, y, width - 90, y + box_height], radius=28, fill="#e5e7eb")
+        for i, line in enumerate(lines):
+            draw.text((48, y + 18 + i * line_height), line, font=body, fill="#111111")
+        y += box_height + 70
+    out = io.BytesIO()
+    img.save(out, "PNG")
+    return out.getvalue()
+
 
 SAMPLE_PHONES = """024 412 3456
 +233 50 123 4567
