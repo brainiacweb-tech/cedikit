@@ -1,103 +1,627 @@
-# cedikit
+<div align="center">
 
-**A Python toolkit for Ghanaian phone numbers, cedi amounts, and Mobile Money transactions.**
+<img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/logo.svg" alt="cedikit" width="460">
 
-[![PyPI](https://img.shields.io/pypi/v/cedikit)](https://pypi.org/project/cedikit/)
+### A Python toolkit for Ghanaian phone numbers, cedi amounts and Mobile Money transactions
+
+[![PyPI](https://img.shields.io/pypi/v/cedikit?color=006B3F&label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/cedikit/)
+[![Python](https://img.shields.io/pypi/pyversions/cedikit?color=FCD116&logo=python&logoColor=black)](https://pypi.org/project/cedikit/)
 [![Docs](https://readthedocs.org/projects/cedikit/badge/?version=latest)](https://cedikit.readthedocs.io/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/brainiacweb-tech/cedikit/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-CE1126.svg)](https://github.com/brainiacweb-tech/cedikit/blob/main/LICENSE)
+<br>
+![Tests](https://img.shields.io/badge/tests-362%20passing-006B3F)
+![Coverage](https://img.shields.io/badge/coverage-99%25-006B3F)
+![mypy](https://img.shields.io/badge/mypy-strict-2A6DB0)
+![Ruff](https://img.shields.io/badge/code%20style-ruff-D7FF64?logo=ruff&logoColor=black)
+![Offline](https://img.shields.io/badge/runs-100%25%20offline-111111)
 
-Every Ghanaian app ends up writing the same code: cleaning phone numbers typed five different
-ways, adding up cedi amounts without floating-point errors, and making sense of MoMo SMS
-alerts. cedikit does this once, carefully, with tests.
+**[📚 Documentation](https://cedikit.readthedocs.io/)** ·
+**[🚀 Quickstart](#-quickstart)** ·
+**[🏗️ Architecture](#%EF%B8%8F-architecture)** ·
+**[💻 CLI](#-command-line)** ·
+**[🤝 Contributing](#-contributing)**
 
-Everything runs **offline**. No user data leaves the device.
+</div>
 
-## Install
+---
+
+## 📖 Table of contents
+
+- [Why cedikit?](#-why-cedikit)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Quickstart](#-quickstart)
+- [Command line](#-command-line)
+- [Architecture](#%EF%B8%8F-architecture)
+- [How it works](#%EF%B8%8F-how-it-works)
+- [Project structure](#-project-structure)
+- [Data model](#-data-model)
+- [Design principles](#-design-principles)
+- [Quality and testing](#-quality-and-testing)
+- [Privacy and ethics](#-privacy-and-ethics)
+- [Limitations](#%EF%B8%8F-limitations)
+- [Roadmap](#%EF%B8%8F-roadmap)
+- [Contributing](#-contributing)
+- [Licence and acknowledgements](#-licence-and-acknowledgements)
+
+---
+
+## 💡 Why cedikit?
+
+Mobile Money is central to everyday commerce in Ghana, yet every developer building a local
+product ends up solving the same five problems again:
+
+| # | Problem | What goes wrong | cedikit's answer |
+|:-:|---|---|---|
+| 1 | 📱 **Messy phone numbers** | `0244123456`, `+233 24 412 3456`, `233244123456`, `24 412 3456`… each app writes its own buggy cleaner | One normaliser for every common format, with reasons for rejections |
+| 2 | 💸 **Unsafe money handling** | Floats turn `0.1 + 0.2` into `0.30000000000000004` | `Decimal` everywhere; floats are refused |
+| 3 | 📩 **Unstructured MoMo records** | Small businesses keep their books in free-text SMS | Parser turns SMS into structured transactions and ledgers |
+| 4 | 🚨 **Fake payment alerts** | Traders release goods on a fake "you have received GHS X" message | Explained fraud checks: sender, wording, balance maths and more |
+| 5 | 🌍 **No Ghana-focused toolkit** | Global libraries know nothing about MoMo, cedis or local scams | Built from real (anonymised) Ghanaian messages |
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### 📱 `phone`
+Normalise, validate, format and mask Ghanaian mobile numbers; guess the network
+(honestly labelled *likely*, because numbers can be ported); bulk-clean a whole column.
+
+### 💰 `money`
+Exact `Decimal` parsing of `"GH₵1.2k"`, `"50p"`, `"(GHS 5.00)"`; formatting
+(`GH₵ 1,200.50`, `GH₵ 1.2k`); amounts in words; pesewa rounding; a float-proof `Cedi` type.
+
+### 📩 `sms`
+Parses **MTN MoMo** and **Telecel Cash** SMS into typed transactions with a
+confidence score, from **12 templates** built from real messages. Includes an
+**anonymiser** that keeps balances consistent.
+
+### 🚨 `fraud`
+Rates a payment SMS **LOW / MEDIUM / HIGH** and explains why: personal-number
+senders, wording that doesn't match genuine alerts, typos, scam phrases, disguised
+letters, impossible balances, plus an optional ML model.
+
+</td>
+<td width="50%" valign="top">
+
+### 📒 `ledger`
+Summaries, cash flow by day/week/month, top counterparties, rule-based categories
+(loan repayments detected), **balance-gap detection**, and export to **Excel / CSV / JSON**
+with charts.
+
+### 🧾 `fees`
+Fee and **E-Levy** estimates from dated tables in which every rule cites its evidence.
+Unknown charges are reported as unknown, never guessed.
+
+### 🪪 `ids`
+**Ghana Card** (`GHA` citizens / `FGN` foreign nationals) and **GhanaPostGPS**
+format checks, with region and district names for **218 district codes**.
+
+### 🔌 Integrations and tools
+`cedikit` **CLI** · **pandas** `.cedikit` accessor · **Pydantic** field types ·
+**Django** and **Flask/WTForms** validators · evaluation tools for precision and recall.
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📦 Installation
 
 ```bash
-pip install cedikit            # core + the `cedikit` command
-pip install "cedikit[all]"     # + pandas, Excel export, charts, ML, Pydantic, Django, Flask
+pip install cedikit             # core library + the `cedikit` command
+pip install "cedikit[all]"      # + every optional extra below
 ```
 
-Requires Python 3.10+.
+Requires **Python 3.10+**. The core depends only on `PyYAML` and `Typer`.
 
-## 30-second tour
+| Extra | Adds | Enables |
+|---|---|---|
+| `excel` | openpyxl | `ledger.export("file.xlsx")` |
+| `charts` | matplotlib | `ledger.plot()` |
+| `pandas` | pandas | `df["phone"].cedikit.normalise()`, `ledger.to_dataframe()` |
+| `ml` | scikit-learn, joblib | `fraud.classifier.ScamClassifier` |
+| `pydantic` | pydantic | `GhanaPhone`, `CediAmount` field types |
+| `django` · `flask` | django · wtforms | Form and model validators |
+
+> [!TIP]
+> On Windows, if `cedikit` isn't recognised after installing, pip has put it in a folder that
+> isn't on your `PATH`. Install inside a virtual environment, or add the folder pip prints to
+> `PATH` and open a new terminal.
+
+---
+
+## 🚀 Quickstart
+
+### 📱 Phone numbers
 
 ```python
-from cedikit import phone, money, sms, fraud, Cedi
-from cedikit.ledger import Ledger
+from cedikit import phone
 
 phone.normalise("024 412 3456")  # '+233244123456'
+phone.format("+233244123456", "pretty")  # '024 412 3456'
 phone.likely_network("0244123456").network  # 'MTN' (likely - numbers can be ported)
+phone.mask("0244123456")  # '024****456'
+
+report = phone.clean_column(["0244123456", "+233 50 123 4567", "12345"])
+print(report)  # 3 numbers: 0 valid, 2 fixed, 1 invalid
+```
+
+### 💰 Money
+
+```python
+from cedikit import money, Cedi
 
 money.parse("GH₵1.2k")  # Decimal('1200.00')
+money.format("1200.5")  # 'GH₵ 1,200.50'
 money.to_words("1200.50")  # 'One thousand two hundred Ghana cedis and fifty pesewas'
-sum([Cedi("1.10"), Cedi("2.20")])  # Cedi('3.30') - exact, unlike 1.1 + 2.2
+sum([Cedi("0.10"), Cedi("0.20")])  # Cedi('0.30')  - exact, unlike 0.1 + 0.2
+money.format(1200.5)  # CediTypeError: floats can't represent pesewas exactly
+```
 
-tx = sms.parse(message_text, sender="MobileMoney").transaction
-tx.type, tx.amount, tx.counterparty, tx.balance
+### 📩 SMS → 📒 ledger
+
+```python
+from cedikit import sms
+from cedikit.ledger import Ledger
+
+result = sms.parse(message_text, sender="MobileMoney")
+if result.ok:
+    tx = result.transaction
+    print(tx.type, tx.amount, tx.counterparty.name, tx.balance, tx.confidence)
 
 ledger = Ledger.from_messages(inbox, sender="MobileMoney").categorise()
 print(ledger.summary())
+ledger.cash_flow("week")  # money in / out per week
+ledger.top_counterparties(5, by="value")  # biggest customers and suppliers
+ledger.balance_gaps()  # where a message is probably missing
 ledger.export("september.xlsx")  # Transactions, Summary, Cash flow, Categories
-
-print(fraud.check(suspicious_text, sender="+233591234567", history=ledger.transactions))
-# Risk: HIGH (score 0.99)
-# Reasons:
-#   - Sent from a personal phone number (+233 59 123 4567), not an official sender ID ...
-#   - Claimed balance GHS 640.35 does not follow from your last genuine balance ...
 ```
 
-From the command line:
+### 🚨 Fake-alert check
+
+```python
+from cedikit import fraud
+
+report = fraud.check(suspicious_text, sender="+233591234567", history=ledger.transactions)
+print(report)
+```
+
+```text
+Risk: HIGH (score 0.99)
+Reasons:
+  - Sent from a personal phone number (+233 59 123 4567), not an official sender ID such as
+    MobileMoney or T-CASH. Genuine alerts never come from personal numbers.
+  - Claimed balance GHS 640.35 does not follow from your last genuine balance of GHS 322.10
+    (expected GHS 472.10), unless you made other transactions in between.
+  - Looks like a Mobile Money alert but does not match any genuine message format.
+  - Contains spelling mistakes ('Avaliable', 'balan'). Genuine alerts are machine-generated
+    and don't have typos.
+Before releasing goods or cash, confirm the payment in your official Mobile Money app ...
+```
+
+### 🧾 Fees and 🪪 IDs
+
+```python
+from datetime import date
+from cedikit import fees
+from cedikit.ids import ghana_card, gpgps
+
+fees.estimate("MTN", "cash_out", "500").fee  # Decimal('5.00')
+fees.estimate("MTN", "send_other_network", "4000", date(2024, 5, 26)).tax
+# Decimal('40.00') - the 1% E-Levy then
+
+ghana_card.card_type("FGN-123456789-0")  # 'foreign national'
+gpgps.parse("ak0395028").district  # 'Kumasi Metropolitan'
+```
+
+---
+
+## 💻 Command line
+
+Installing cedikit adds a `cedikit` command:
 
 ```bash
-cedikit phone clean customers.csv --column phone
-cedikit sms parse inbox.csv --export xlsx
+cedikit phone clean customers.csv --column phone        # clean a CSV column
+cedikit sms parse inbox.csv --export xlsx               # SMS → Excel ledger
 cedikit fraud check "Cash receive for 200.00 ..." --sender 0551234567
+cedikit fees estimate TELECEL send_other_network 40
+cedikit ids check AK-039-5028
 ```
 
-## Modules
-
-| Module | What it does |
+| Command | Purpose |
 |---|---|
-| `cedikit.phone` | Normalise, validate, format, mask, likely network, bulk clean |
-| `cedikit.money` | `Decimal` parsing, formatting, words, rounding, the `Cedi` type |
-| `cedikit.sms` | MTN MoMo and Telecel Cash SMS → transactions (12 formats); anonymiser |
-| `cedikit.fraud` | Fake-alert detection with reasons; optional ML classifier |
-| `cedikit.ledger` | Summary, cash flow, categories, balance gaps, CSV/Excel/JSON, charts |
-| `cedikit.fees` | Fee and E-Levy estimates from dated, sourced tables |
-| `cedikit.ids` | Ghana Card and GhanaPostGPS format checks |
-| `cedikit.evaluation` | Parser accuracy and fraud precision/recall on labelled data |
-| Integrations | pandas accessor, Pydantic types, Django and Flask validators |
+| `phone clean` · `phone check` | Normalise a CSV column (adds status and reason columns) · inspect one number |
+| `money parse` · `money words` | `GH₵1.2k` → `1200.00` · amount in words |
+| `sms parse` · `sms anonymise` | Messages → ledger summary, balance gaps, export · anonymise before sharing |
+| `fraud check` | Risk rating with reasons (`-` reads from stdin) |
+| `fees estimate` | Fee and E-Levy estimate for a date |
+| `ids check` | Ghana Card or GhanaPostGPS format check |
 
-Full documentation: [the docs site](https://cedikit.readthedocs.io/). The end-to-end demo is
-[notebooks/demo.ipynb](https://github.com/brainiacweb-tech/cedikit/blob/main/notebooks/demo.ipynb), using the data in [examples/](https://github.com/brainiacweb-tech/cedikit/tree/main/examples).
+---
 
-## Honest outputs
+## 🏗️ Architecture
 
-- **Network detection is only "likely".** Mobile number portability lets people keep their number
-  when they switch networks.
-- **Fees are estimates.** The tables record only charges seen in real messages or published
-  rules, each with its source. Unknown charges are reported as unknown, never guessed.
-- **Fraud results are risk indicators, not guarantees.** Always confirm a payment in the official
-  Mobile Money app before releasing goods.
-- **Money is never a float.**
+cedikit is a set of small, independent modules over a **data layer of YAML files**. Nothing
+touches the network. Rules that change over time (prefixes, message formats, fees, scam
+phrases, district codes) live in data, so they can be updated without code changes.
 
-## Development
+```mermaid
+flowchart TB
+    subgraph Users["👥 Users"]
+        APP["Python apps, bots, APIs"]
+        TERM["Terminal users"]
+        DS["Analysts (pandas, notebooks)"]
+    end
+
+    subgraph Interfaces["🔌 Interfaces"]
+        API["Public API<br/>cedikit.*"]
+        CLI["CLI<br/>cedikit (Typer)"]
+        INT["Integrations<br/>pandas · Pydantic · Django · Flask"]
+    end
+
+    subgraph Core["⚙️ Core modules"]
+        PHONE["📱 phone"]
+        MONEY["💰 money"]
+        SMS["📩 sms<br/>parser · anonymiser"]
+        FRAUD["🚨 fraud<br/>rules · classifier"]
+        LEDGER["📒 ledger"]
+        FEES["🧾 fees"]
+        IDS["🪪 ids"]
+        EVAL["📏 evaluation"]
+    end
+
+    subgraph Data["🗂️ Data layer (YAML, versioned)"]
+        D1["data/prefixes.yaml"]
+        D2["sms/templates/*.yaml"]
+        D3["fraud/scam_phrases.yaml"]
+        D4["fees/tables/*.yaml"]
+        D5["ids/regions.yaml"]
+    end
+
+    APP --> API
+    TERM --> CLI
+    DS --> INT
+    CLI --> Core
+    INT --> Core
+    API --> Core
+
+    SMS --> PHONE
+    SMS --> MONEY
+    FRAUD --> SMS
+    FRAUD --> LEDGER
+    LEDGER --> SMS
+    FEES --> MONEY
+    EVAL --> FRAUD
+    EVAL --> SMS
+
+    PHONE -.reads.-> D1
+    SMS -.reads.-> D2
+    FRAUD -.reads.-> D3
+    FEES -.reads.-> D4
+    IDS -.reads.-> D5
+```
+
+### Module dependencies
+
+| Module | Depends on | Data it reads |
+|---|---|---|
+| `phone` | — | `data/prefixes.yaml` |
+| `money` | — | — |
+| `sms` | `phone`, `money` | `sms/templates/mtn.yaml`, `telecel.yaml` |
+| `ledger` | `sms`, `money`, `phone` | — |
+| `fraud` | `sms`, `ledger`, `phone`, `money` | `fraud/scam_phrases.yaml` |
+| `fees` | `money` | `fees/tables/*.yaml` |
+| `ids` | — | `ids/regions.yaml` |
+| `evaluation` | `sms`, `fraud` | your labelled YAML files |
+
+---
+
+## ⚙️ How it works
+
+### 📩 SMS parsing pipeline
+
+Each message format is a **template**: a regular expression written with readable
+`{{placeholders}}`. When a telco changes its wording, a new template is added; the parser
+code doesn't change.
+
+```mermaid
+flowchart LR
+    A["Raw SMS<br/>+ sender ID"] --> B["Clean<br/>whitespace, GH₵/GHC → GHS"]
+    B --> C{"Official sender?<br/>MobileMoney / T-CASH"}
+    C -- yes --> D["Try that network's<br/>templates first"]
+    C -- no --> E["Try all templates"]
+    D --> F["Match template<br/>+ search extras"]
+    E --> F
+    F --> G["Validate fields<br/>amount → Decimal<br/>phone → E.164<br/>date → datetime (GMT)"]
+    G --> H["Confidence =<br/>valid fields ÷ required × weight"]
+    H --> I{"Any match?"}
+    I -- yes --> J["✅ ParseResult<br/>status = parsed<br/>best Transaction"]
+    I -- no --> K["❔ ParseResult<br/>status = unrecognised<br/>(never raises)"]
+```
+
+A template looks like this (from [`sms/templates/mtn.yaml`](https://github.com/brainiacweb-tech/cedikit/blob/main/src/cedikit/sms/templates/mtn.yaml)):
+
+```yaml
+- name: mtn_cash_out
+  type: CASH_OUT
+  pattern: >-
+    Cash Out made for {{amount}} to {{counterparty_name}} ?\.
+    Current Balance:? {{balance}}
+    Financial Transaction Id: {{transaction_id}}\.
+    .*?Fee charged: {{fee}}
+  fields:
+    transaction_id: '\d{11}'
+```
+
+**Supported formats (12):**
+
+| | Telecel Cash | MTN MoMo |
+|---|---|---|
+| 📤 Send | same network, other network | other network |
+| 📥 Receive | same network, other network | payment received |
+| 🛒 Pay | — | merchants, loans, auto-debits |
+| 🏧 Cash in / out | cash in | cash in, cash out |
+| 📶 Airtime / data | airtime purchase, airtime notice | data bundle |
+
+### 🚨 Fraud scoring
+
+Every check produces independent **signals** with a strength between 0 and 1. They are
+combined with a **noisy-OR**, so separate red flags reinforce each other and passing checks
+never water down a failing one:
+
+$$\text{score} = 1 - \prod_{i}(1 - s_i) \qquad \text{LOW} < 0.35 \le \text{MEDIUM} \le 0.70 < \text{HIGH}$$
+
+```mermaid
+flowchart TB
+    M["SMS + sender + optional history"] --> P["Parse with sms templates"]
+    P --> C1["👤 Sender<br/>personal number? 0.85"]
+    P --> C2["📝 Format<br/>looks like an alert<br/>but matches no template? 0.5"]
+    P --> C3["🔤 Spelling<br/>'Avaliable', 'balan'… 0.5"]
+    P --> C4["💬 Scam phrases<br/>PIN, 'account blocked',<br/>'send it back'… 0.3–0.6"]
+    P --> C5["🎭 Disguised letters<br/>'Suspéndéd' 0.5"]
+    P --> C6["🔢 Transaction ID<br/>wrong length 0.4"]
+    P --> C7["⚖️ Balance maths<br/>vs. genuine history 0.7"]
+    P --> C8["🤖 Optional ML model<br/>probability × 0.6"]
+    C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 --> N["Noisy-OR<br/>1 − ∏(1 − sᵢ)"]
+    N --> R["FraudReport<br/>risk · score · reasons · advice"]
+```
+
+> [!NOTE]
+> **Why not a weighted average?** A perfect copy of a genuine alert sent from a personal
+> number passes every wording check. An average would dilute the one decisive signal to
+> MEDIUM; noisy-OR keeps it HIGH.
+
+### 📒 From SMS to insight
+
+```mermaid
+flowchart LR
+    S["📩 SMS inbox<br/>(.txt or .csv)"] --> L["Ledger.from_messages"]
+    L --> F1["Skip notices<br/>(affects_wallet = false)"]
+    L --> F2["Drop duplicate<br/>transaction IDs"]
+    L --> F3["Keep unrecognised<br/>for review"]
+    F1 & F2 --> T["Transactions"]
+    T --> A1["summary()"]
+    T --> A2["cash_flow()"]
+    T --> A3["top_counterparties()"]
+    T --> A4["categorise()"]
+    T --> A5["balance_gaps()"]
+    A1 & A2 & A4 --> X["📊 Excel · CSV · JSON · charts"]
+```
+
+**`affects_wallet`:** some messages repeat a transaction without moving money. Telecel
+sends "you have received airtime" after an airtime purchase, with the same transaction ID.
+These are recognised but marked `affects_wallet=False`, so ledgers never count them twice.
+
+**Balance gaps:** consecutive balances must satisfy
+`new = previous ± amount − fee − tax`. When they don't, a message is usually missing, such
+as an automatic loan deduction. Occasionally a message is fake.
+
+---
+
+## 📁 Project structure
+
+```text
+cedikit/
+├── 📂 src/cedikit/
+│   ├── __init__.py              # public API: phone, money, sms, fraud, ledger, fees, ids
+│   ├── phone.py                 # 📱 normalise, validate, format, mask, clean_column
+│   ├── money.py                 # 💰 Decimal parsing/formatting, to_words, Cedi type
+│   ├── ledger.py                # 📒 Ledger, summaries, cash flow, exports, charts
+│   ├── evaluation.py            # 📏 parser accuracy, fraud precision/recall
+│   ├── cli.py                   # 💻 the `cedikit` command (Typer)
+│   ├── exceptions.py            # CedikitError and friends
+│   ├── py.typed                 # ships type hints to users
+│   ├── 📂 data/
+│   │   └── prefixes.yaml        # network prefixes (NCA numbering plan + updates)
+│   ├── 📂 sms/
+│   │   ├── parser.py            # template engine, confidence scoring
+│   │   ├── models.py            # Transaction, Counterparty, ParseResult
+│   │   ├── anonymise.py         # privacy-preserving anonymiser
+│   │   └── 📂 templates/        # mtn.yaml, telecel.yaml
+│   ├── 📂 fraud/
+│   │   ├── rules.py             # checks + noisy-OR scoring
+│   │   ├── classifier.py        # optional scikit-learn model
+│   │   └── scam_phrases.yaml    # scam language, misspellings, ID lengths
+│   ├── 📂 fees/
+│   │   ├── calculator.py        # dated, sourced fee + E-Levy estimates
+│   │   └── 📂 tables/           # mtn.yaml, telecel.yaml, levies.yaml
+│   ├── 📂 ids/
+│   │   ├── ghana_card.py        # GHA / FGN card numbers
+│   │   ├── gpgps.py             # GhanaPostGPS digital addresses
+│   │   └── regions.yaml         # 10 region letters, 218 district codes
+│   └── 📂 integrations/          # pandas, pydantic, django, flask
+├── 📂 tests/                    # 362 tests, anonymised fixtures in fixtures/sample_messages/
+├── 📂 docs/                     # MkDocs site (Read the Docs)
+├── 📂 examples/                 # synthetic demo data + generator
+├── 📂 notebooks/                # end-to-end demo notebook
+├── .github/workflows/ci.yml     # lint, types, tests on 3.10–3.13, build, publish
+├── .readthedocs.yaml            # docs hosting
+└── pyproject.toml               # packaging (Hatch), extras, tool config
+```
+
+---
+
+## 🧬 Data model
+
+```mermaid
+classDiagram
+    class ParseResult {
+        status: parsed | unrecognised
+        transaction: Transaction?
+        raw: str
+        ok() bool
+    }
+    class Transaction {
+        network: MTN | TELECEL
+        type: TransactionType
+        amount: Decimal
+        fee, tax, balance: Decimal?
+        transaction_id, reference: str?
+        timestamp: datetime?
+        confidence: float
+        affects_wallet: bool
+        needs_review() bool
+    }
+    class Counterparty {
+        name: str?
+        phone: str? (E.164)
+        network: str?
+    }
+    class TransactionType {
+        RECEIVED · SENT · CASH_IN · CASH_OUT
+        MERCHANT · AIRTIME · BILL · REVERSAL
+        direction() in | out
+    }
+    class FraudReport {
+        risk: LOW | MEDIUM | HIGH
+        score: float
+        reasons: list~str~
+        checks: dict~str, bool~
+        advice: str
+    }
+    ParseResult --> Transaction
+    Transaction --> Counterparty
+    Transaction --> TransactionType
+    FraudReport --> ParseResult : parsed
+```
+
+---
+
+## 🧭 Design principles
+
+| | Principle | In practice |
+|:-:|---|---|
+| 🔒 | **Offline by default** | No network calls anywhere. No data leaves the device. |
+| 🗂️ | **Data separate from code** | Prefixes, templates, fees, scam phrases and districts are YAML. |
+| 🧩 | **Small, focused modules** | Use `phone` alone, or combine everything. |
+| 🛟 | **Fail gracefully** | Unknown SMS returns `unrecognised`; invalid input explains *why*. |
+| 🎯 | **Honest outputs** | Networks are *likely*, fees are *estimates*, fraud is a *risk indicator*, unknowns stay `None`. |
+| 💯 | **Money is never a float** | `Decimal` end to end; floats raise `CediTypeError`. |
+| 📜 | **Evidence over guesses** | Every fee rule and dataset cites its source; real messages beat unverified guides. |
+
+---
+
+## ✅ Quality and testing
+
+| Check | Result |
+|---|---|
+| 🧪 Tests (pytest + Hypothesis property tests) | **362 passing** |
+| 📈 Line coverage | **99%** (minimum enforced: 90%) |
+| 🔍 Type checking | **mypy strict**, zero errors |
+| 🧹 Lint and format | **Ruff**, zero issues |
+| 📚 Docstring examples | 28 doctests run as tests |
+| 📄 Docs build | `mkdocs build --strict` |
+| 🐍 Python versions | 3.10 · 3.11 · 3.12 · 3.13 |
+
+Property-based tests check invariants such as `normalise(format(x)) == x` for every valid
+number, exact `Cedi` sums, and that the parser never raises on arbitrary text. Every
+anonymised sample message must parse to its expected fields, and every genuine one must score
+LOW for fraud.
 
 ```bash
-python -m venv .venv
-.venv/Scripts/activate        # Windows; use `source .venv/bin/activate` elsewhere
+git clone https://github.com/brainiacweb-tech/cedikit && cd cedikit
+python -m venv .venv && .venv/Scripts/activate       # macOS/Linux: source .venv/bin/activate
 pip install -e ".[dev,docs]"
-pytest                        # tests + coverage (>= 90%)
-pytest --no-cov --doctest-modules src
+pytest                                   # tests + coverage
+pytest --no-cov --doctest-modules src    # docstring examples
 ruff check . && ruff format --check .
 mypy
-mkdocs serve                  # docs at http://127.0.0.1:8000
+mkdocs serve                             # docs at http://127.0.0.1:8000
 ```
 
-See [CONTRIBUTING.md](https://github.com/brainiacweb-tech/cedikit/blob/main/CONTRIBUTING.md) and [Adding an SMS template](https://github.com/brainiacweb-tech/cedikit/blob/main/docs/contributing-templates.md).
+---
 
-## Licence
+## 🔐 Privacy and ethics
 
-MIT © Francis Kusi. Built in Ghana, for Ghana.
+- 🔒 **Offline only.** Nothing is uploaded, logged or stored unless you export it.
+- 🕶️ **Masking helpers:** `phone.mask()` and `ghana_card.mask()` for logs and reports.
+- 🧹 **Anonymised data only.** Every sample message in this repository was anonymised
+  before being committed. `cedikit sms anonymise` does it for you and keeps balances
+  consistent.
+- ⚠️ **Always confirm payments** in the official Mobile Money app or USSD menu before
+  releasing goods. No SMS check is a guarantee.
+- ⚖️ Designed in line with the principles of Ghana's **Data Protection Act, 2012 (Act 843)**.
+
+---
+
+## ⚠️ Limitations
+
+- **Formats:** MTN MoMo and Telecel Cash only (12 templates). AT Money is out of scope.
+- **Fees** are estimates. MTN's cross-network fee and Telecel's cash-out fee are unknown
+  until confirmed from real messages or official tariffs.
+- **Ghana Card** check digits can't be verified; the algorithm isn't published.
+- **ID checks** confirm format only, never that a card or address exists.
+- **Fraud accuracy** has so far been measured on the messages used to write the rules; a
+  held-out evaluation is in progress. No trained ML model is shipped.
+
+---
+
+## 🗺️ Roadmap
+
+- [x] 📱 Phone, 💰 money, 📩 SMS parser, 🚨 fraud checks, 📒 ledger, 🧾 fees, 🪪 IDs
+- [x] 💻 CLI, 🔌 integrations, 📚 docs, 📦 PyPI release
+- [ ] 📏 Held-out evaluation on unseen genuine and scam messages
+- [ ] ▶️ `python -m cedikit` entry point
+- [ ] 🏦 Bank transaction SMS · 📄 MoMo PDF statements
+- [ ] 🗣️ Twi and other local-language scam phrases
+- [ ] 🤖 Telegram bot and web app built on cedikit
+- [ ] 🌍 Country packs for Nigeria and Côte d'Ivoire
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome, especially **new SMS templates** when a telco changes its wording
+and **anonymised scam samples**.
+
+1. Read [CONTRIBUTING.md](https://github.com/brainiacweb-tech/cedikit/blob/main/CONTRIBUTING.md)
+   and [Adding an SMS template](https://github.com/brainiacweb-tech/cedikit/blob/main/docs/contributing-templates.md).
+2. **Never commit real personal data.** Run `cedikit sms anonymise` first.
+3. Make sure `pytest`, `ruff` and `mypy` pass.
+
+Found a bug or a message that doesn't parse?
+[Open an issue](https://github.com/brainiacweb-tech/cedikit/issues) with an **anonymised** copy.
+
+---
+
+## 📜 Licence and acknowledgements
+
+Released under the **[MIT Licence](https://github.com/brainiacweb-tech/cedikit/blob/main/LICENSE)** © Francis Kusi.
+
+Built by **Francis Kusi** as a BSc Business Information Technology project,
+Department of Supply Chain and Information Systems, **KNUST School of Business**.
+
+Data sources: National Communications Authority numbering plan, GhanaPostGPS, Ghana Revenue
+Authority, and anonymised messages generously shared by volunteers.
+
+<div align="center">
+
+**🇬🇭 Built in Ghana, for Ghana.**
+
+</div>

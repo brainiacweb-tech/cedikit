@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="160" viewBox="0 0 560 160" role="img" aria-label="cedikit">
+  <title>cedikit</title>
+  <defs>
+    <linearGradient id="flag" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#CE1126"/>
+      <stop offset="0.333" stop-color="#CE1126"/>
+      <stop offset="0.333" stop-color="#FCD116"/>
+      <stop offset="0.667" stop-color="#FCD116"/>
+      <stop offset="0.667" stop-color="#006B3F"/>
+      <stop offset="1" stop-color="#006B3F"/>
+    </linearGradient>
+  </defs>
+  <!-- icon: rounded square in Ghana's colours with a cedi sign -->
+  <rect x="8" y="8" width="144" height="144" rx="32" fill="url(#flag)"/>
+  <circle cx="80" cy="80" r="50" fill="#111"/>
+  <text x="80" y="104" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="72" font-weight="700" fill="#FCD116">₵</text>
+  <path d="M124 22 l4.2 8.6 9.4 1.4 -6.8 6.6 1.6 9.4 -8.4 -4.4 -8.4 4.4 1.6 -9.4 -6.8 -6.6 9.4 -1.4z"
+        fill="#111"/>
+  <!-- wordmark -->
+  <text x="178" y="96" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="72"
+        font-weight="700" fill="#006B3F">cedi<tspan fill="#CE1126">kit</tspan></text>
+  <text x="181" y="130" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="19"
+        fill="#6b7280">Phone · Cedi · Mobile Money — for Ghana</text>
+</svg>
