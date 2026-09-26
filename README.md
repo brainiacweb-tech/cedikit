@@ -178,7 +178,7 @@ numbers or money details anywhere on the internet.
 
 ## 🖥️ Desktop and web apps
 
-*New in version 1.1.0.* cedikit also comes as **software with windows and buttons**, so anyone can use
+*Since version 1.1.0 (on PyPI from 1.2.0).* cedikit also comes as **software with windows and buttons**, so anyone can use
 it without writing code. Both apps have the same six tabs and give exactly the same answers.
 
 | Tab | What you do |

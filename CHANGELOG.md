@@ -7,6 +7,11 @@ are released as patch versions.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-26
+
+The first PyPI release with the apps: it also brings the 1.1.0 features (desktop app, web app,
+`python -m cedikit`), which were published on GitHub only.
+
 ### Added
 - **Screenshots**: `cedikit.ocr.read_screenshot()` reads MoMo messages and the sender straight
   from a screenshot, offline (Windows' built-in OCR on Windows, RapidOCR elsewhere; extra
@@ -19,6 +24,8 @@ are released as patch versions.
 - The stand-alone `.exe` includes screenshot reading and self-tests it.
 
 ## [1.1.0] - 2026-09-26
+
+Published as a GitHub Release (with `cedikit-app.exe`); not uploaded to PyPI.
 
 ### Added
 - **Desktop app** (`cedikit app` / `cedikit-app`), built with Tkinter: tabs to check a
