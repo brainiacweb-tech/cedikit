@@ -7,6 +7,13 @@ are released as patch versions.
 
 ## [Unreleased]
 
+### Added
+- **Web API** for developers in any language: `cedikit api` (extra `cedikit[api]`) starts a
+  FastAPI server with endpoints for phone numbers, money, SMS parsing, fraud checks, ledgers,
+  fees, IDs and screenshots, plus interactive documentation at `/docs`. Money is returned as
+  strings; nothing is stored; it listens on `127.0.0.1` by default, with an optional API key
+  (`CEDIKIT_API_KEY`) and configurable CORS (`CEDIKIT_API_CORS`) for sharing it.
+
 ## [1.2.1] - 2026-09-26
 
 ### Fixed

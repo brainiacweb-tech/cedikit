@@ -301,5 +301,31 @@ def open_web_app(
     raise typer.Exit(subprocess.call(command))
 
 
+@app.command("api")
+def serve_api(
+    host: Annotated[
+        str, typer.Option(help="Address to listen on. 0.0.0.0 = whole network.")
+    ] = "127.0.0.1",
+    port: Annotated[int, typer.Option(help="Port to serve on.")] = 8000,
+) -> None:
+    """Start the web API for developers (docs at /docs)."""
+    import importlib.util
+    import os
+
+    if importlib.util.find_spec("fastapi") is None or importlib.util.find_spec("uvicorn") is None:
+        raise _fail('The API needs FastAPI. Install it with: pip install "cedikit[api]"')
+    import uvicorn
+
+    if host not in {"127.0.0.1", "localhost"} and not os.environ.get("CEDIKIT_API_KEY"):
+        typer.secho(
+            "Warning: the API is reachable from other computers and has no key. "
+            "Set CEDIKIT_API_KEY to require one.",
+            fg=typer.colors.YELLOW,
+            err=True,
+        )
+    typer.echo(f"cedikit API at http://{host}:{port} - documentation at /docs (Ctrl+C to stop)")
+    uvicorn.run("cedikit.api:app", host=host, port=port, log_level="warning")
+
+
 if __name__ == "__main__":  # pragma: no cover
     app()

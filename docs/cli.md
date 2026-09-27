@@ -13,6 +13,8 @@ Installing cedikit adds a `cedikit` command. Run `cedikit --help` or `cedikit <g
 | `cedikit fraud check TEXT [--sender ID]` | Risk rating with reasons (`-` reads the text from stdin) |
 | `cedikit fees estimate NETWORK KIND AMOUNT [--on YYYY-MM-DD]` | Fee and E-Levy estimate |
 | `cedikit ids check VALUE` | Ghana Card or GhanaPostGPS format check |
+| `cedikit app` · `cedikit web [--port N]` | Open the [desktop or web app](apps.md) |
+| `cedikit api [--host H] [--port N]` | Start the [web API](api.md) for other languages (default `127.0.0.1:8000`) |
 
 **Message files** for `sms parse` and `sms anonymise` are either plain text with one message per
 paragraph (messages separated by a blank line), or a CSV with a `text` column.

@@ -54,6 +54,7 @@
 - [Installation](#-installation)
 - [Quickstart](#-quickstart)
 - [Command line](#-command-line)
+- [Web API for any language](#-web-api-for-any-language) ← use cedikit from JavaScript, PHP, Flutter…
 - [Architecture](#%EF%B8%8F-architecture)
 - [How it works](#%EF%B8%8F-how-it-works)
 - [Project structure](#-project-structure)
@@ -473,7 +474,7 @@ Unknown charges are reported as unknown, never guessed.
 format checks, with region and district names for **218 district codes**.
 
 ### 🔌 Integrations and tools
-🪟 **Desktop app** and 🌐 **web app** for non-programmers · `cedikit` **CLI** · **pandas** `.cedikit` accessor · **Pydantic** field types ·
+🪟 **Desktop app** and 🌐 **web app** for non-programmers · 🌍 **web API** for any language · `cedikit` **CLI** · **pandas** `.cedikit` accessor · **Pydantic** field types ·
 **Django** and **Flask/WTForms** validators · evaluation tools for precision and recall.
 
 </td>
@@ -490,7 +491,8 @@ format checks, with region and district names for **218 district codes**.
 |---|---|---|
 | 🏪 **Not a programmer** | 🪟 Desktop app | [Download `cedikit-app.exe`](https://github.com/brainiacweb-tech/cedikit/releases/latest) and double-click it. No Python needed. |
 | 🙋 **Comfortable with Python** | 🪟 Desktop or 🌐 web app | `pip install "cedikit[app]"` → `cedikit app`, or `pip install "cedikit[web]"` → `cedikit web` |
-| 👩‍💻 **A developer** | 📦 Library + 💻 CLI | `pip install cedikit` (below) |
+| 👩‍💻 **A Python developer** | 📦 Library + 💻 CLI | `pip install cedikit` (below) |
+| 🌍 **A developer in another language** | 🔌 Web API | `pip install "cedikit[api]"` → `cedikit api` ([details](#-web-api-for-any-language)) |
 
 ```bash
 pip install cedikit             # core library + the `cedikit` command
@@ -510,6 +512,7 @@ Requires **Python 3.10+**. The core depends only on `PyYAML` and `Typer`.
 | `ocr` | Pillow + Windows OCR / RapidOCR | `ocr.read_screenshot("shot.png")`: messages from screenshots |
 | `app` | openpyxl, ocr | The desktop app with Excel export and screenshots (`cedikit app`) |
 | `web` | streamlit, openpyxl, ocr | The web app (`cedikit web`) |
+| `api` | fastapi, uvicorn, ocr | The web API for other languages (`cedikit api`) |
 
 > [!TIP]
 > On Windows, if `cedikit` isn't recognised after installing, pip has put it in a folder that
@@ -635,6 +638,47 @@ cedikit ids check AK-039-5028
 | `fraud check` | Risk rating with reasons (`-` reads from stdin) |
 | `fees estimate` | Fee and E-Levy estimate for a date |
 | `ids check` | Ghana Card or GhanaPostGPS format check |
+| `app` · `web` · `api` | Open the desktop app · the web app · start the web API |
+
+---
+
+## 🌍 Web API for any language
+
+Not using Python? Run cedikit as a web API and call it from **JavaScript, PHP, Java, Kotlin,
+Flutter, C#, Go** or anything else that can send HTTP requests:
+
+```bash
+pip install "cedikit[api]"
+cedikit api          # http://127.0.0.1:8000, interactive docs at /docs
+```
+
+```bash
+curl -X POST http://127.0.0.1:8000/v1/fraud/check -H "Content-Type: application/json"   -d '{"text": "Cash In for GHS150.00 from AKOSUA. Avaliable balan 640.35", "sender": "0551234567"}'
+# {"risk": "HIGH", "score": 0.96, "headline": "Very likely fake", "reasons": [...], ...}
+```
+
+```javascript
+const res = await fetch("http://127.0.0.1:8000/v1/phone/check", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ number: "024 412 3456" }),
+});
+const { e164, network } = await res.json(); // "+233244123456", "MTN"
+```
+
+| Endpoint | Does |
+|---|---|
+| `POST /v1/phone/check` · `/v1/phone/clean` | Check one number · clean a whole list |
+| `POST /v1/money/parse` | `"GH₵1.2k"` → `"1200.00"`, formatted, in words |
+| `POST /v1/sms/parse` · `/v1/ledger` | One SMS → transaction · many SMS → totals, categories, notes |
+| `POST /v1/fraud/check` | Risk rating with reasons |
+| `POST /v1/fees/estimate` · `/v1/ids/check` | Fee and E-Levy estimate · Ghana Card / digital address check |
+| `POST /v1/screenshot` | Upload a screenshot → each message read, parsed and checked |
+
+- 💵 **Money is always a string** (`"1200.50"`), never a JSON number, so no language rounds it wrongly.
+- 🔒 **Nothing is stored.** The API listens on your own computer only, unless you choose `--host 0.0.0.0`.
+  Then set `CEDIKIT_API_KEY` so every request needs an `X-API-Key` header.
+- 📘 Full guide with PHP, Python and Flutter examples: [Web API](https://cedikit.readthedocs.io/en/latest/api/).
 
 ---
 

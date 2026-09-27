@@ -41,6 +41,8 @@ markdown_extensions:
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
   - tables
+  - pymdownx.tabbed:
+      alternate_style: true
 
 nav:
   - Home: index.md
@@ -48,6 +50,7 @@ nav:
   - Desktop & web apps: apps.md
   - Quickstart: quickstart.md
   - Command line: cli.md
+  - Web API (any language): api.md
   - Modules:
       - Phone numbers: modules/phone.md
       - Money: modules/money.md
