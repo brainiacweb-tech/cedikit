@@ -25,6 +25,7 @@ pip install "cedikit[all]"     # + pandas, Excel, charts, ML, Pydantic, Django, 
 | [`fees`](modules/fees.md) | Fee and E-Levy estimates from dated, sourced tables |
 | [`ids`](modules/ids.md) | Ghana Card and GhanaPostGPS format checks |
 | [Integrations](modules/integrations.md) | pandas accessor, Pydantic types, Django and Flask validators |
+| [Web API](api.md) | Use cedikit from JavaScript, PHP, Flutter or any other language |
 
 ## Principles
 

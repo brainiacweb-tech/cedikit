@@ -7,6 +7,8 @@ are released as patch versions.
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-27
+
 ### Added
 - **Web API** for developers in any language: `cedikit api` (extra `cedikit[api]`) starts a
   FastAPI server with endpoints for phone numbers, money, SMS parsing, fraud checks, ledgers,

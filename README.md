@@ -3,7 +3,7 @@
 <img src="https://raw.githubusercontent.com/brainiacweb-tech/cedikit/main/docs/assets/logo.svg" alt="cedikit" width="460">
 
 ### A Python toolkit for Ghanaian phone numbers, cedi amounts and Mobile Money transactions
-#### 📦 Python library · 💻 Command line · 🪟 Desktop app · 🌐 Web app
+#### 📦 Python library · 💻 Command line · 🪟 Desktop app · 🌐 Web app · 🌍 Web API
 
 [![PyPI](https://img.shields.io/pypi/v/cedikit?color=006B3F&label=PyPI&logo=pypi&logoColor=white)](https://pypi.org/project/cedikit/)
 [![Python](https://img.shields.io/pypi/pyversions/cedikit?color=FCD116&logo=python&logoColor=black)](https://pypi.org/project/cedikit/)
